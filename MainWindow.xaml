@@ -1,0 +1,74 @@
+<Window x:Class="ActivityTracker.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ActivityTracker"
+        Height="560"
+        Width="980"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid Margin="18">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0"
+                   Text="ActivityTracker"
+                   FontSize="26"
+                   FontWeight="SemiBold"/>
+
+        <StackPanel Grid.Row="1"
+                    Orientation="Horizontal"
+                    Margin="0,12,0,12">
+
+            <TextBlock Text="状态：正在记录"
+                       VerticalAlignment="Center"/>
+
+            <Button Content="刷新"
+                    Width="80"
+                    Margin="20,0,0,0"
+                    Click="Refresh_Click"/>
+
+            <TextBlock x:Name="SummaryText"
+                       Margin="20,0,0,0"
+                       VerticalAlignment="Center"/>
+
+        </StackPanel>
+
+        <DataGrid Grid.Row="2"
+                  x:Name="ActivityGrid"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  CanUserAddRows="False">
+
+            <DataGrid.Columns>
+
+                <DataGridTextColumn Header="开始"
+                                    Binding="{Binding StartTime, StringFormat=HH:mm:ss}"
+                                    Width="90"/>
+
+                <DataGridTextColumn Header="结束"
+                                    Binding="{Binding EndTime, StringFormat=HH:mm:ss}"
+                                    Width="90"/>
+
+                <DataGridTextColumn Header="应用"
+                                    Binding="{Binding ProcessName}"
+                                    Width="140"/>
+
+                <DataGridTextColumn Header="窗口标题"
+                                    Binding="{Binding WindowTitle}"
+                                    Width="*"/>
+
+                <DataGridTextColumn Header="时长(s)"
+                                    Binding="{Binding DurationSeconds}"
+                                    Width="90"/>
+
+            </DataGrid.Columns>
+
+        </DataGrid>
+
+    </Grid>
+
+</Window>
