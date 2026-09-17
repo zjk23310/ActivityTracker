@@ -10,6 +10,7 @@ public sealed class ActivityRepository
 {
     private readonly string _connectionString;
 
+    
     public ActivityRepository(string databasePath)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(databasePath)!);
@@ -17,6 +18,7 @@ public sealed class ActivityRepository
         Initialize();
     }
 
+    //初始化，如果没有数据库则创建对应数据库
     private void Initialize()
     {
         using var connection = new SqliteConnection(_connectionString);
@@ -40,6 +42,7 @@ public sealed class ActivityRepository
         command.ExecuteNonQuery();
     }
 
+    //插入会话操作
     public void Insert(ActivitySession session)
     {
         using var connection = new SqliteConnection(_connectionString);
@@ -63,10 +66,18 @@ public sealed class ActivityRepository
         command.ExecuteNonQuery();
     }
 
+    //获取今天的活动记录
     public List<ActivitySession> GetToday()
     {
         var start = DateTime.Today;
         var end = start.AddDays(1);
+        return GetRange(start, end);
+    }
+    //进行修改，改为获取一定时间段的活动记录，方便后续进行数据分析
+    public List<ActivitySession> GetRange(DateTime start, DateTime end)
+    {
+        if (end <= start)
+            throw new ArgumentException("结束事件小于等于开始事件");
         var result = new List<ActivitySession>();
 
         using var connection = new SqliteConnection(_connectionString);
@@ -76,9 +87,10 @@ public sealed class ActivityRepository
             SELECT Id, ProcessName, WindowTitle, ExecutablePath,
                    StartTime, EndTime, DurationSeconds, IsIdle
             FROM ActivitySessions
-            WHERE StartTime >= $start AND StartTime < $end
+            WHERE StartTime < $end AND StartTime > $start
             ORDER BY StartTime DESC;
             """;
+        //注意where参数，这里能够支持交集
         command.Parameters.AddWithValue("$start", start.ToString("O"));
         command.Parameters.AddWithValue("$end", end.ToString("O"));
 
@@ -97,7 +109,7 @@ public sealed class ActivityRepository
                 IsIdle = reader.GetInt32(7) != 0
             });
         }
-
+        //result是一个会话集合
         return result;
     }
 }

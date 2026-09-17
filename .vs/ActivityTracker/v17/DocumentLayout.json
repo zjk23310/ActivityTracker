@@ -3,11 +3,32 @@
   "WorkspaceRootPath": "E:\\ActivityTracker\\ActivityTracker\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|e:\\activitytracker\\activitytracker\\services\\foregroundwindowtracker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|solutionrelative:services\\foregroundwindowtracker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|e:\\activitytracker\\activitytracker\\models\\appusagestat.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|solutionrelative:models\\appusagestat.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|e:\\activitytracker\\activitytracker\\models\\activitysession.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|solutionrelative:models\\activitysession.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|e:\\activitytracker\\activitytracker\\data\\activityrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|solutionrelative:data\\activityrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\29816\\AppData\\Local\\Temp\\.vsdbgsrc\\45295768691f8390fbec6c7c6e738e6ef19358a6d26c1990f835aac52db50d35\\XamlReader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|e:\\activitytracker\\activitytracker\\views\\statisticsview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|solutionrelative:views\\statisticsview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|e:\\activitytracker\\activitytracker\\views\\statisticsview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|solutionrelative:views\\statisticsview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|e:\\activitytracker\\activitytracker\\views\\\u65B0\u5EFA \u6587\u672C\u6587\u6863.txt||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|solutionrelative:views\\\u65B0\u5EFA \u6587\u672C\u6587\u6863.txt||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|e:\\activitytracker\\activitytracker\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -18,16 +39,35 @@
       "RelativeMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|solutionrelative:mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|e:\\activitytracker\\activitytracker\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|solutionrelative:app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|e:\\activitytracker\\activitytracker\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|solutionrelative:app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|e:\\activitytracker\\activitytracker\\services\\statisticsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|solutionrelative:services\\statisticsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|e:\\activitytracker\\activitytracker\\services\\sessiontracker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|solutionrelative:services\\sessiontracker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|e:\\activitytracker\\activitytracker\\activitytracker.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|solutionrelative:activitytracker.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\ActivityTracker\\ActivityTracker\\obj\\Debug\\net8.0-windows\\MainWindow.g.i.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:obj\\Debug\\net8.0-windows\\MainWindow.g.i.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|e:\\activitytracker\\activitytracker\\services\\idledetector.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|solutionrelative:services\\idledetector.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|e:\\activitytracker\\activitytracker\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|solutionrelative:app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\29816\\AppData\\Local\\Temp\\.vsdbgsrc\\45295768691f8390fbec6c7c6e738e6ef19358a6d26c1990f835aac52db50d35\\XamlReader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|e:\\activitytracker\\activitytracker\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|solutionrelative:app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|e:\\activitytracker\\activitytracker\\restore-and-build.ps1||{3B902123-F8A7-4915-9F01-361F908088D0}",
@@ -36,14 +76,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|e:\\activitytracker\\activitytracker\\nuget.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
       "RelativeMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|solutionrelative:nuget.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|e:\\activitytracker\\activitytracker\\models\\activitysession.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|solutionrelative:models\\activitysession.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|e:\\activitytracker\\activitytracker\\services\\foregroundwindowtracker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CE922E42-717C-9960-FD68-D8F5996C5779}|ActivityTracker.csproj|solutionrelative:services\\foregroundwindowtracker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -53,7 +85,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 11,
+          "SelectedChildIndex": 17,
           "Children": [
             {
               "$type": "Bookmark",
@@ -61,70 +93,109 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "XamlReader.cs",
-              "DocumentMoniker": "C:\\Users\\29816\\AppData\\Local\\Temp\\.vsdbgsrc\\45295768691f8390fbec6c7c6e738e6ef19358a6d26c1990f835aac52db50d35\\XamlReader.cs",
-              "ToolTip": "C:\\Users\\29816\\AppData\\Local\\Temp\\.vsdbgsrc\\45295768691f8390fbec6c7c6e738e6ef19358a6d26c1990f835aac52db50d35\\XamlReader.cs [\u53EA\u8BFB]",
-              "ViewState": "AgIAAH4BAAAAAAAAAAAgwIMBAAAaAAAAAQAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-17T02:40:28.27Z",
-              "EditorCaption": " [\u53EA\u8BFB]"
+              "DocumentIndex": 6,
+              "Title": "\u65B0\u5EFA \u6587\u672C\u6587\u6863.txt",
+              "DocumentMoniker": "E:\\ActivityTracker\\ActivityTracker\\Views\\\u65B0\u5EFA \u6587\u672C\u6587\u6863.txt",
+              "RelativeDocumentMoniker": "Views\\\u65B0\u5EFA \u6587\u672C\u6587\u6863.txt",
+              "ToolTip": "E:\\ActivityTracker\\ActivityTracker\\Views\\\u65B0\u5EFA \u6587\u672C\u6587\u6863.txt",
+              "RelativeToolTip": "Views\\\u65B0\u5EFA \u6587\u672C\u6587\u6863.txt",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003109|",
+              "WhenOpened": "2026-09-17T07:53:44.15Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "MainWindow.xaml.cs",
-              "DocumentMoniker": "E:\\ActivityTracker\\ActivityTracker\\MainWindow.xaml.cs",
-              "RelativeDocumentMoniker": "MainWindow.xaml.cs",
-              "ToolTip": "E:\\ActivityTracker\\ActivityTracker\\MainWindow.xaml.cs",
-              "RelativeToolTip": "MainWindow.xaml.cs",
-              "ViewState": "AgIAABMAAAAAAAAAAAAYwBwAAAAIAAAAAAAAAA==",
+              "DocumentIndex": 4,
+              "Title": "StatisticsView.xaml.cs",
+              "DocumentMoniker": "E:\\ActivityTracker\\ActivityTracker\\Views\\StatisticsView.xaml.cs",
+              "RelativeDocumentMoniker": "Views\\StatisticsView.xaml.cs",
+              "ToolTip": "E:\\ActivityTracker\\ActivityTracker\\Views\\StatisticsView.xaml.cs",
+              "RelativeToolTip": "Views\\StatisticsView.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAALsAAAAlAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-17T02:35:17.127Z",
+              "WhenOpened": "2026-09-17T07:46:28.322Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 5,
-              "Title": "App.xaml.cs",
-              "DocumentMoniker": "E:\\ActivityTracker\\ActivityTracker\\App.xaml.cs",
-              "RelativeDocumentMoniker": "App.xaml.cs",
-              "ToolTip": "E:\\ActivityTracker\\ActivityTracker\\App.xaml.cs",
-              "RelativeToolTip": "App.xaml.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAbAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-17T02:28:57.363Z",
+              "Title": "StatisticsView.xaml",
+              "DocumentMoniker": "E:\\ActivityTracker\\ActivityTracker\\Views\\StatisticsView.xaml",
+              "RelativeDocumentMoniker": "Views\\StatisticsView.xaml",
+              "ToolTip": "E:\\ActivityTracker\\ActivityTracker\\Views\\StatisticsView.xaml",
+              "RelativeToolTip": "Views\\StatisticsView.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-09-17T07:45:34.072Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "restore-and-build.ps1",
-              "DocumentMoniker": "E:\\ActivityTracker\\ActivityTracker\\restore-and-build.ps1",
-              "RelativeDocumentMoniker": "restore-and-build.ps1",
-              "ToolTip": "E:\\ActivityTracker\\ActivityTracker\\restore-and-build.ps1",
-              "RelativeToolTip": "restore-and-build.ps1",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-09-17T02:27:14.101Z",
+              "DocumentIndex": 11,
+              "Title": "ActivityTracker",
+              "DocumentMoniker": "E:\\ActivityTracker\\ActivityTracker\\ActivityTracker.csproj",
+              "RelativeDocumentMoniker": "ActivityTracker.csproj",
+              "ToolTip": "E:\\ActivityTracker\\ActivityTracker\\ActivityTracker.csproj",
+              "RelativeToolTip": "ActivityTracker.csproj",
+              "ViewState": "AgIAAAMAAAAAAAAAAADwvwAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-09-17T06:57:05.178Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "MainWindow.g.i.cs",
+              "DocumentMoniker": "E:\\ActivityTracker\\ActivityTracker\\obj\\Debug\\net8.0-windows\\MainWindow.g.i.cs",
+              "RelativeDocumentMoniker": "obj\\Debug\\net8.0-windows\\MainWindow.g.i.cs",
+              "ToolTip": "E:\\ActivityTracker\\ActivityTracker\\obj\\Debug\\net8.0-windows\\MainWindow.g.i.cs",
+              "RelativeToolTip": "obj\\Debug\\net8.0-windows\\MainWindow.g.i.cs",
+              "ViewState": "AgIAAF4AAAAAAAAAAAA2wGkAAAATAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-17T06:54:14.016Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "StatisticsService.cs",
+              "DocumentMoniker": "E:\\ActivityTracker\\ActivityTracker\\Services\\StatisticsService.cs",
+              "RelativeDocumentMoniker": "Services\\StatisticsService.cs",
+              "ToolTip": "E:\\ActivityTracker\\ActivityTracker\\Services\\StatisticsService.cs",
+              "RelativeToolTip": "Services\\StatisticsService.cs",
+              "ViewState": "AgIAAGIAAAAAAAAAAAAiwH0AAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-17T06:48:15.028Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AppUsageStat.cs",
+              "DocumentMoniker": "E:\\ActivityTracker\\ActivityTracker\\Models\\AppUsageStat.cs",
+              "RelativeDocumentMoniker": "Models\\AppUsageStat.cs",
+              "ToolTip": "E:\\ActivityTracker\\ActivityTracker\\Models\\AppUsageStat.cs",
+              "RelativeToolTip": "Models\\AppUsageStat.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-17T06:40:03.706Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "IdleDetector.cs",
+              "DocumentMoniker": "E:\\ActivityTracker\\ActivityTracker\\Services\\IdleDetector.cs",
+              "RelativeDocumentMoniker": "Services\\IdleDetector.cs",
+              "ToolTip": "E:\\ActivityTracker\\ActivityTracker\\Services\\IdleDetector.cs",
+              "RelativeToolTip": "Services\\IdleDetector.cs",
+              "ViewState": "AgIAABkAAAAAAAAAAAAswBoAAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-17T02:49:46.924Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 8,
-              "Title": "NuGet.Config",
-              "DocumentMoniker": "E:\\ActivityTracker\\ActivityTracker\\NuGet.Config",
-              "RelativeDocumentMoniker": "NuGet.Config",
-              "ToolTip": "E:\\ActivityTracker\\ActivityTracker\\NuGet.Config",
-              "RelativeToolTip": "NuGet.Config",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
-              "WhenOpened": "2026-09-17T02:27:13.173Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
               "Title": "MainWindow.xaml",
               "DocumentMoniker": "E:\\ActivityTracker\\ActivityTracker\\MainWindow.xaml",
               "RelativeDocumentMoniker": "MainWindow.xaml",
@@ -136,7 +207,67 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 15,
+              "Title": "XamlReader.cs",
+              "DocumentMoniker": "C:\\Users\\29816\\AppData\\Local\\Temp\\.vsdbgsrc\\45295768691f8390fbec6c7c6e738e6ef19358a6d26c1990f835aac52db50d35\\XamlReader.cs",
+              "ToolTip": "C:\\Users\\29816\\AppData\\Local\\Temp\\.vsdbgsrc\\45295768691f8390fbec6c7c6e738e6ef19358a6d26c1990f835aac52db50d35\\XamlReader.cs [\u53EA\u8BFB]",
+              "ViewState": "AgIAAH4BAAAAAAAAAAAgwIMBAAAaAAAAAQAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-17T02:40:28.27Z",
+              "EditorCaption": " [\u53EA\u8BFB]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "MainWindow.xaml.cs",
+              "DocumentMoniker": "E:\\ActivityTracker\\ActivityTracker\\MainWindow.xaml.cs",
+              "RelativeDocumentMoniker": "MainWindow.xaml.cs",
+              "ToolTip": "E:\\ActivityTracker\\ActivityTracker\\MainWindow.xaml.cs",
+              "RelativeToolTip": "MainWindow.xaml.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAAP8AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-17T02:35:17.127Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "App.xaml.cs",
+              "DocumentMoniker": "E:\\ActivityTracker\\ActivityTracker\\App.xaml.cs",
+              "RelativeDocumentMoniker": "App.xaml.cs",
+              "ToolTip": "E:\\ActivityTracker\\ActivityTracker\\App.xaml.cs",
+              "RelativeToolTip": "App.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-17T02:28:57.363Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "restore-and-build.ps1",
+              "DocumentMoniker": "E:\\ActivityTracker\\ActivityTracker\\restore-and-build.ps1",
+              "RelativeDocumentMoniker": "restore-and-build.ps1",
+              "ToolTip": "E:\\ActivityTracker\\ActivityTracker\\restore-and-build.ps1",
+              "RelativeToolTip": "restore-and-build.ps1",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-09-17T02:27:14.101Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "NuGet.Config",
+              "DocumentMoniker": "E:\\ActivityTracker\\ActivityTracker\\NuGet.Config",
+              "RelativeDocumentMoniker": "NuGet.Config",
+              "ToolTip": "E:\\ActivityTracker\\ActivityTracker\\NuGet.Config",
+              "RelativeToolTip": "NuGet.Config",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2026-09-17T02:27:13.173Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
               "Title": "App.xaml",
               "DocumentMoniker": "E:\\ActivityTracker\\ActivityTracker\\App.xaml",
               "RelativeDocumentMoniker": "App.xaml",
@@ -148,50 +279,52 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 10,
               "Title": "SessionTracker.cs",
               "DocumentMoniker": "E:\\ActivityTracker\\ActivityTracker\\Services\\SessionTracker.cs",
               "RelativeDocumentMoniker": "Services\\SessionTracker.cs",
               "ToolTip": "E:\\ActivityTracker\\ActivityTracker\\Services\\SessionTracker.cs",
               "RelativeToolTip": "Services\\SessionTracker.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAoAAAAUAAAAAAAAAA==",
+              "ViewState": "AgIAAJ0AAAAAAAAAAAAQwKAAAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-09-16T02:27:16.84Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 0,
               "Title": "ForegroundWindowTracker.cs",
               "DocumentMoniker": "E:\\ActivityTracker\\ActivityTracker\\Services\\ForegroundWindowTracker.cs",
               "RelativeDocumentMoniker": "Services\\ForegroundWindowTracker.cs",
               "ToolTip": "E:\\ActivityTracker\\ActivityTracker\\Services\\ForegroundWindowTracker.cs",
               "RelativeToolTip": "Services\\ForegroundWindowTracker.cs",
-              "ViewState": "AgIAAFkAAAAAAAAAAAAswAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAjwBAAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-16T02:27:01.766Z"
+              "WhenOpened": "2026-09-16T02:27:01.766Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 2,
               "Title": "ActivitySession.cs",
               "DocumentMoniker": "E:\\ActivityTracker\\ActivityTracker\\Models\\ActivitySession.cs",
               "RelativeDocumentMoniker": "Models\\ActivitySession.cs",
               "ToolTip": "E:\\ActivityTracker\\ActivityTracker\\Models\\ActivitySession.cs",
               "RelativeToolTip": "Models\\ActivitySession.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-16T02:26:59.668Z"
+              "WhenOpened": "2026-09-16T02:26:59.668Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "ActivityRepository.cs",
               "DocumentMoniker": "E:\\ActivityTracker\\ActivityTracker\\Data\\ActivityRepository.cs",
               "RelativeDocumentMoniker": "Data\\ActivityRepository.cs",
               "ToolTip": "E:\\ActivityTracker\\ActivityTracker\\Data\\ActivityRepository.cs",
               "RelativeToolTip": "Data\\ActivityRepository.cs",
-              "ViewState": "AgIAAGcAAAAAAAAAAAAAADsAAAAVAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-09-16T02:18:29.174Z",
               "EditorCaption": ""

@@ -1,11 +1,11 @@
-using System;
-using System.Linq;
-using System.IO;
-using System.Windows;
-using System.ComponentModel;
 using ActivityTracker.Data;
 using ActivityTracker.Services;
-
+using ActivityTracker.Views;
+using System;
+using System.ComponentModel;
+using System.IO;
+using System.Linq;
+using System.Windows;
 using Forms = System.Windows.Forms;
 
 namespace ActivityTracker;
@@ -14,6 +14,7 @@ public partial class MainWindow : Window
 {
     private readonly ActivityRepository _repository;
     private readonly SessionTracker _sessionTracker;
+    private readonly StatisticsService _statisticsService;
 
     // 系统托盘图标
     private readonly Forms.NotifyIcon _notifyIcon;
@@ -37,13 +38,28 @@ public partial class MainWindow : Window
             "ActivityTracker",
             "activity.db");
 
-        _repository = new ActivityRepository(dbPath);
+        _repository =
+            new ActivityRepository(dbPath);
 
         // 5 分钟没有键鼠输入则判断为空闲
-        _sessionTracker = new SessionTracker(
-            _repository,
-            TimeSpan.FromMinutes(5));
+        _sessionTracker =
+            new SessionTracker(
+                _repository,
+                TimeSpan.FromMinutes(5));
 
+        _statisticsService =
+            new StatisticsService(
+                _repository);
+
+        // ==============================
+        // 接入统计页面
+        // ==============================
+        StatisticsHost.Content =
+            new StatisticsView(
+                _statisticsService,
+                _sessionTracker);
+
+        // 活动记录变化时刷新原来的表格
         _sessionTracker.SessionChanged += () =>
             Dispatcher.Invoke(RefreshData);
 
@@ -53,7 +69,8 @@ public partial class MainWindow : Window
         _notifyIcon = new Forms.NotifyIcon
         {
             Text = "ActivityTracker",
-            Icon = System.Drawing.SystemIcons.Application,
+            Icon =
+                System.Drawing.SystemIcons.Application,
             Visible = true
         };
 
@@ -64,25 +81,32 @@ public partial class MainWindow : Window
         };
 
         // 创建右键菜单
-        var menu = new Forms.ContextMenuStrip();
+        var menu =
+            new Forms.ContextMenuStrip();
 
-        var showItem = new Forms.ToolStripMenuItem("显示");
+        var showItem =
+            new Forms.ToolStripMenuItem("显示");
+
         showItem.Click += (_, _) =>
         {
             ShowMainWindow();
         };
 
-        var exitItem = new Forms.ToolStripMenuItem("退出");
+        var exitItem =
+            new Forms.ToolStripMenuItem("退出");
+
         exitItem.Click += (_, _) =>
         {
             ExitApplication();
         };
 
         menu.Items.Add(showItem);
-        menu.Items.Add(new Forms.ToolStripSeparator());
+        menu.Items.Add(
+            new Forms.ToolStripSeparator());
         menu.Items.Add(exitItem);
 
-        _notifyIcon.ContextMenuStrip = menu;
+        _notifyIcon.ContextMenuStrip =
+            menu;
 
         // ==============================
         // 窗口加载
@@ -94,6 +118,7 @@ public partial class MainWindow : Window
         };
     }
 
+
     // ==============================
     // 点击刷新按钮
     // ==============================
@@ -104,38 +129,48 @@ public partial class MainWindow : Window
         RefreshData();
     }
 
+
     // ==============================
-    // 刷新统计数据
+    // 刷新活动记录数据
     // ==============================
     private void RefreshData()
     {
-        var sessions = _repository.GetToday();
+        var sessions =
+            _repository.GetToday();
 
-        ActivityGrid.ItemsSource = sessions;
+        ActivityGrid.ItemsSource =
+            sessions;
 
-        var total = sessions.Sum(
-            x => x.DurationSeconds);
+        var total =
+            sessions.Sum(
+                x => x.DurationSeconds);
 
-        var active = sessions
-            .Where(x => !x.IsIdle)
-            .Sum(x => x.DurationSeconds);
+        var active =
+            sessions
+                .Where(x => !x.IsIdle)
+                .Sum(x => x.DurationSeconds);
 
         SummaryText.Text =
-            $"今日记录 {Format(total)}，活跃 {Format(active)}";
+            $"今日记录 {Format(total)}，" +
+            $"活跃 {Format(active)}";
     }
+
 
     // ==============================
     // 格式化时间
     // ==============================
-    private static string Format(int seconds)
+    private static string Format(
+        int seconds)
     {
-        var span = TimeSpan.FromSeconds(seconds);
+        var span =
+            TimeSpan.FromSeconds(seconds);
 
         return
             $"{(int)span.TotalHours:D2}:" +
             $"{span.Minutes:D2}:" +
             $"{span.Seconds:D2}";
     }
+
 
     // ==============================
     // 恢复主窗口
@@ -144,19 +179,21 @@ public partial class MainWindow : Window
     {
         Show();
 
-        if (WindowState == WindowState.Minimized)
+        if (WindowState ==
+            WindowState.Minimized)
         {
-            WindowState = WindowState.Normal;
+            WindowState =
+                WindowState.Normal;
         }
 
         Activate();
 
-        // 让窗口显示到最前面
         Topmost = true;
         Topmost = false;
 
         Focus();
     }
+
 
     // ==============================
     // 点击右上角 X
@@ -164,16 +201,12 @@ public partial class MainWindow : Window
     protected override void OnClosing(
         CancelEventArgs e)
     {
-        // 如果不是用户主动选择“退出”
         if (!_reallyExit)
         {
-            // 阻止窗口真正关闭
             e.Cancel = true;
 
-            // 隐藏窗口
             Hide();
 
-            // 第一次隐藏时提示
             if (!_trayTipShown)
             {
                 _notifyIcon.ShowBalloonTip(
@@ -191,6 +224,7 @@ public partial class MainWindow : Window
         base.OnClosing(e);
     }
 
+
     // ==============================
     // 托盘菜单 → 退出
     // ==============================
@@ -198,23 +232,22 @@ public partial class MainWindow : Window
     {
         _reallyExit = true;
 
-        // 关闭窗口
         Close();
 
-        // 因为使用 OnExplicitShutdown
-        // 所以这里明确退出 WPF 程序
-        System.Windows.Application.Current.Shutdown();
+        System.Windows.Application
+            .Current
+            .Shutdown();
     }
+
 
     // ==============================
     // 真正关闭程序
     // ==============================
-    protected override void OnClosed(EventArgs e)
+    protected override void OnClosed(
+        EventArgs e)
     {
-        // 停止应用追踪并保存当前 Session
         _sessionTracker.Dispose();
 
-        // 清理托盘图标
         _notifyIcon.Visible = false;
         _notifyIcon.Dispose();
 

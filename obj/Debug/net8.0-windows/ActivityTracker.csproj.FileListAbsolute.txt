@@ -44,3 +44,6 @@ E:\ActivityTracker\ActivityTracker\obj\Debug\net8.0-windows\ActivityTracker.pdb
 E:\ActivityTracker\ActivityTracker\obj\Debug\net8.0-windows\ActivityTracker.genruntimeconfig.cache
 E:\ActivityTracker\ActivityTracker\obj\Debug\net8.0-windows\ref\ActivityTracker.dll
 E:\ActivityTracker\ActivityTracker\obj\Debug\net8.0-windows\App.baml
+E:\ActivityTracker\ActivityTracker\obj\Debug\net8.0-windows\ActivityTracker.sourcelink.json
+E:\ActivityTracker\ActivityTracker\obj\Debug\net8.0-windows\Views\StatisticsView.baml
+E:\ActivityTracker\ActivityTracker\obj\Debug\net8.0-windows\Views\StatisticsView.g.cs
