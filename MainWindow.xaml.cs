@@ -13,6 +13,8 @@ namespace ActivityTracker;
 public partial class MainWindow : Window
 {
     private readonly ActivityRepository _repository;
+    private readonly DailyRepository _dailyRepository;
+    private readonly TodoRepository _todoRepository;
     private readonly SessionTracker _sessionTracker;
     private readonly StatisticsService _statisticsService;
 
@@ -41,6 +43,12 @@ public partial class MainWindow : Window
         _repository =
             new ActivityRepository(dbPath);
 
+        _dailyRepository =
+            new DailyRepository(dbPath);
+
+        _todoRepository =
+            new TodoRepository(dbPath);
+
         // 5 分钟没有键鼠输入则判断为空闲
         _sessionTracker =
             new SessionTracker(
@@ -58,6 +66,14 @@ public partial class MainWindow : Window
             new StatisticsView(
                 _statisticsService,
                 _sessionTracker);
+
+        // ==============================
+        // 接入日记与待办页面
+        // ==============================
+        DiaryTodoHost.Content =
+            new DiaryTodoView(
+                _dailyRepository,
+                _todoRepository);
 
         // 活动记录变化时刷新原来的表格
         _sessionTracker.SessionChanged += () =>

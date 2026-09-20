@@ -47,3 +47,9 @@ E:\ActivityTracker\ActivityTracker\obj\Debug\net8.0-windows\App.baml
 E:\ActivityTracker\ActivityTracker\obj\Debug\net8.0-windows\ActivityTracker.sourcelink.json
 E:\ActivityTracker\ActivityTracker\obj\Debug\net8.0-windows\Views\StatisticsView.baml
 E:\ActivityTracker\ActivityTracker\obj\Debug\net8.0-windows\Views\StatisticsView.g.cs
+E:\ActivityTracker\ActivityTracker\obj\Debug\net8.0-windows\Views\AddTodoDialog.baml
+E:\ActivityTracker\ActivityTracker\obj\Debug\net8.0-windows\Views\AddTodoDialog.g.cs
+E:\ActivityTracker\ActivityTracker\obj\Debug\net8.0-windows\Views\DiaryTodoView.g.cs
+E:\ActivityTracker\ActivityTracker\obj\Debug\net8.0-windows\GeneratedInternalTypeHelper.g.cs
+E:\ActivityTracker\ActivityTracker\obj\Debug\net8.0-windows\ActivityTracker_MarkupCompile.lref
+E:\ActivityTracker\ActivityTracker\obj\Debug\net8.0-windows\Views\DiaryTodoView.baml

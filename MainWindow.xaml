@@ -103,6 +103,18 @@
 
         </TabItem>
 
+
+        <!-- ======================== -->
+        <!-- 日记与待办 -->
+        <!-- ======================== -->
+
+        <TabItem Header="日记与待办">
+
+            <ContentControl
+                x:Name="DiaryTodoHost"/>
+
+        </TabItem>
+
     </TabControl>
 
 </Window>

@@ -18,43 +18,27 @@ public sealed class ActivityRepository
         Initialize();
     }
 
-    //³õÊ¼»¯£¬Èç¹ûÃ»ÓÐÊý¾Ý¿âÔò´´½¨¶ÔÓ¦Êý¾Ý¿â
+    //ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ò´´½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½Ý¿ï¿½
     private void Initialize()
     {
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
 
         var command = connection.CreateCommand();
-        command.CommandText = """
-            CREATE TABLE IF NOT EXISTS ActivitySessions (
-                Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                ProcessName TEXT NOT NULL,
-                WindowTitle TEXT NOT NULL,
-                ExecutablePath TEXT NOT NULL,
-                StartTime TEXT NOT NULL,
-                EndTime TEXT NOT NULL,
-                DurationSeconds INTEGER NOT NULL,
-                IsIdle INTEGER NOT NULL
-            );
-            CREATE INDEX IF NOT EXISTS IX_ActivitySessions_StartTime
-            ON ActivitySessions(StartTime);
-            """;
+        command.CommandText =
+            SqlConstants.CreateActivitySessionsTable;
         command.ExecuteNonQuery();
     }
 
-    //²åÈë»á»°²Ù×÷
+    //ï¿½ï¿½ï¿½ï¿½á»°ï¿½ï¿½ï¿½ï¿½
     public void Insert(ActivitySession session)
     {
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
 
         var command = connection.CreateCommand();
-        command.CommandText = """
-            INSERT INTO ActivitySessions
-            (ProcessName, WindowTitle, ExecutablePath, StartTime, EndTime, DurationSeconds, IsIdle)
-            VALUES
-            ($process, $title, $path, $start, $end, $duration, $idle);
-            """;
+        command.CommandText =
+            SqlConstants.InsertActivitySession;
 
         command.Parameters.AddWithValue("$process", session.ProcessName);
         command.Parameters.AddWithValue("$title", session.WindowTitle);
@@ -66,31 +50,26 @@ public sealed class ActivityRepository
         command.ExecuteNonQuery();
     }
 
-    //»ñÈ¡½ñÌìµÄ»î¶¯¼ÇÂ¼
+    //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½Ä»î¶¯ï¿½ï¿½Â¼
     public List<ActivitySession> GetToday()
     {
         var start = DateTime.Today;
         var end = start.AddDays(1);
         return GetRange(start, end);
     }
-    //½øÐÐÐÞ¸Ä£¬¸ÄÎª»ñÈ¡Ò»¶¨Ê±¼ä¶ÎµÄ»î¶¯¼ÇÂ¼£¬·½±ãºóÐø½øÐÐÊý¾Ý·ÖÎö
+    //ï¿½ï¿½ï¿½ï¿½ï¿½Þ¸Ä£ï¿½ï¿½ï¿½Îªï¿½ï¿½È¡Ò»ï¿½ï¿½Ê±ï¿½ï¿½ÎµÄ»î¶¯ï¿½ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý·ï¿½ï¿½ï¿½
     public List<ActivitySession> GetRange(DateTime start, DateTime end)
     {
         if (end <= start)
-            throw new ArgumentException("½áÊøÊÂ¼þÐ¡ÓÚµÈÓÚ¿ªÊ¼ÊÂ¼þ");
+            throw new ArgumentException("ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½Ð¡ï¿½Úµï¿½ï¿½Ú¿ï¿½Ê¼ï¿½Â¼ï¿½");
         var result = new List<ActivitySession>();
 
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
         var command = connection.CreateCommand();
-        command.CommandText = """
-            SELECT Id, ProcessName, WindowTitle, ExecutablePath,
-                   StartTime, EndTime, DurationSeconds, IsIdle
-            FROM ActivitySessions
-            WHERE StartTime < $end AND StartTime > $start
-            ORDER BY StartTime DESC;
-            """;
-        //×¢Òâwhere²ÎÊý£¬ÕâÀïÄÜ¹»Ö§³Ö½»¼¯
+        command.CommandText =
+            SqlConstants.SelectActivitySessionsByRange;
+        //×¢ï¿½ï¿½whereï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü¹ï¿½Ö§ï¿½Ö½ï¿½ï¿½ï¿½
         command.Parameters.AddWithValue("$start", start.ToString("O"));
         command.Parameters.AddWithValue("$end", end.ToString("O"));
 
@@ -109,7 +88,7 @@ public sealed class ActivityRepository
                 IsIdle = reader.GetInt32(7) != 0
             });
         }
-        //resultÊÇÒ»¸ö»á»°¼¯ºÏ
+        //resultï¿½ï¿½Ò»ï¿½ï¿½ï¿½á»°ï¿½ï¿½ï¿½ï¿½
         return result;
     }
 }
