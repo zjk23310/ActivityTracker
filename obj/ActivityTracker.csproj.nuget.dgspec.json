@@ -56,6 +56,10 @@
             "Microsoft.Data.Sqlite": {
               "target": "Package",
               "version": "[8.0.8, )"
+            },
+            "Microsoft.Extensions.Hosting": {
+              "target": "Package",
+              "version": "[8.0.0, )"
             }
           },
           "imports": [

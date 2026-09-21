@@ -33,7 +33,7 @@ internal static class SqlConstants
         SELECT Id, ProcessName, WindowTitle, ExecutablePath,
                StartTime, EndTime, DurationSeconds, IsIdle
         FROM ActivitySessions
-        WHERE StartTime < $end AND StartTime > $start
+        WHERE StartTime < $end AND EndTime > $start
         ORDER BY StartTime DESC;
         """;
 

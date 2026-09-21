@@ -12,9 +12,9 @@ TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR
 E:\ActivityTracker\ActivityTracker\App.xaml
 4810220545
 
-21-1769707344
-2111744732372
+27-1197466903
+238-245796861
 MainWindow.xaml;Views\AddTodoDialog.xaml;Views\DiaryTodoView.xaml;Views\StatisticsView.xaml;
 
-True
+False
 

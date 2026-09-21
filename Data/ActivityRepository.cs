@@ -10,7 +10,8 @@ public sealed class ActivityRepository
 {
     private readonly string _connectionString;
 
-    
+
+    //构造出数据库连接串
     public ActivityRepository(string databasePath)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(databasePath)!);
@@ -18,7 +19,7 @@ public sealed class ActivityRepository
         Initialize();
     }
 
-    //��ʼ�������û�����ݿ��򴴽���Ӧ���ݿ�
+   
     private void Initialize()
     {
         using var connection = new SqliteConnection(_connectionString);

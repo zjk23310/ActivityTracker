@@ -1,0 +1,90 @@
+using System;
+
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
+using ActivityTracker.Data;
+using ActivityTracker.Services;
+
+namespace ActivityTracker.Startup;
+
+// 服务注册集中在这里。
+// 以前这些对象全是在 MainWindow 构造函数里 new 出来的，
+// 现在交给容器管理，MainWindow 只负责显示。
+// 主要作用是告诉Hosting容器如何创建这些服务对象，以及它们的生命周期（单例、瞬态、作用域等）。
+internal static class ServiceRegistration
+{
+    // 空闲判定阈值。暂时写死，
+    // 以后接入配置文件时改成从 Settings 读。
+    private static readonly TimeSpan IdleThreshold =
+        TimeSpan.FromMinutes(5);
+
+    public static IServiceCollection AddActivityTracker(
+        this IServiceCollection services,
+        string wakePipeName)
+    {
+        // ==============================
+        // 数据层：三个仓储共用同一个数据库文件
+        // ==============================
+
+        //AddSingleton表示只创建一个，第一次创建，之后复用
+        services.AddSingleton(
+            _ => new ActivityRepository(
+                AppPaths.DatabasePath));
+
+        services.AddSingleton(
+            _ => new DailyRepository(
+                AppPaths.DatabasePath));
+
+        services.AddSingleton(
+            _ => new TodoRepository(
+                AppPaths.DatabasePath));
+
+        // ==============================
+        // 业务服务
+        // ==============================
+
+        services.AddSingleton<StatisticsService>();//构造函数中有依赖注入的参数，容器会自动解析
+
+        services.AddSingleton(sp =>
+            new SessionTracker(
+                sp.GetRequiredService<ActivityRepository>(),
+                IdleThreshold));
+
+        // ==============================
+        // 托盘
+        // ==============================
+
+        services.AddSingleton<TrayService>();
+
+        // ==============================
+        // 后台任务
+        //
+        // 先注册成具体类型，再以 IHostedService 暴露同一个实例：
+        // Host 启动时会把所有 IHostedService 跑一遍，
+        // 同时 App 还能拿到具体类型去订阅它们的事件。
+        // ==============================
+
+        services.AddSingleton<TrackingHostedService>();
+        services.AddSingleton<IHostedService>(
+            sp => sp.GetRequiredService<TrackingHostedService>());
+
+        services.AddSingleton(
+            _ => new WakeListenerService(wakePipeName));
+        services.AddSingleton<IHostedService>(
+            sp => sp.GetRequiredService<WakeListenerService>());
+
+        // ==============================
+        // 主窗口
+        //
+        // 按单例创建：MainWindow 和 StatisticsView 都订阅了
+        // SessionTracker.SessionChanged 且从不退订，
+        // 只要窗口只建一次，这些订阅就不会泄漏。
+        // 窗口重建的问题留到页面导航那一阶段再处理。
+        // ==============================
+
+        services.AddSingleton<MainWindow>();
+
+        return services;
+    }
+}

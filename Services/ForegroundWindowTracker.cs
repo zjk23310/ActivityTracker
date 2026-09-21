@@ -8,35 +8,34 @@ namespace ActivityTracker.Services;
 
 public sealed class ForegroundWindowTracker : IDisposable
 {
-    private const uint EVENT_SYSTEM_FOREGROUND = 0x0003;
+    private const uint EVENT_SYSTEM_FOREGROUND = 0x0003;//对应
     private const uint WINEVENT_OUTOFCONTEXT = 0x0000;
 
     private readonly WinEventDelegate _callback;
-    private IntPtr _hook;
+    private IntPtr _hook;//钩子
 
     //事件：窗口改变
     public event Action<WindowInfo>? ForegroundChanged;
 
     public ForegroundWindowTracker()
     {
-        _callback = OnWinEvent;//赋值
+        _callback = OnWinEvent;//赋值，callback
     }
 
-    //
     public void Start()
     {
         if (_hook != IntPtr.Zero) return;//防止重复启动如果hook==Zero表示还没有注册hook
 
         _hook = SetWinEventHook(//设置hook
             EVENT_SYSTEM_FOREGROUND,
-            EVENT_SYSTEM_FOREGROUND,
+            EVENT_SYSTEM_FOREGROUND,//最小事件和最大事件一样说明只监听前台窗口变化
             IntPtr.Zero,
             _callback,//检测到事件，回调什么函数
             0,//进程id
             0,//线程id 0表示不限制具体
             WINEVENT_OUTOFCONTEXT);//不把代码注入其他进程自己处理
 
-        var current = GetForegroundWindow();
+        var current = GetForegroundWindow();//立即获取当前前台窗口句柄，防止启动时没有触发事件
         if (current != IntPtr.Zero)//成功获得窗口句柄
             RaiseWindowInfo(current);
     }
@@ -65,7 +64,7 @@ public sealed class ForegroundWindowTracker : IDisposable
             try { path = process.MainModule?.FileName ?? ""; }
             catch { path = ""; }//获取完整路径
 
-            ForegroundChanged?.Invoke(new WindowInfo(//最终流出，进程名，标题名以及可执行文件路径,?表示若不为空则执行
+            ForegroundChanged?.Invoke(new WindowInfo(//最终流出，进程名，标题名以及可执行文件路径,?表示若不为空则执行，也就是订阅之后执行
                 process.ProcessName,
                 sb.ToString(),
                 path));
@@ -86,7 +85,7 @@ public sealed class ForegroundWindowTracker : IDisposable
     }
 
     private delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType, IntPtr hwnd,
-        int idObject, int idChild, uint idEventThread, uint dwmsEventTime);
+        int idObject, int idChild, uint idEventThread, uint dwmsEventTime);//委托类型，定义了回调函数的签名
 
     //向windows注册一个事件钩子，监听前台窗口变化
     [DllImport("user32.dll")]

@@ -5,7 +5,7 @@ using ActivityTracker.Models;
 
 namespace ActivityTracker.Services;
 
-public sealed class SessionTracker : IDisposable
+public sealed class SessionTracker : IDisposable//这个对象用完后需要主动清理资源
 {
     private readonly ActivityRepository _repository;
     private readonly ForegroundWindowTracker _foregroundTracker;//前台窗口跟踪器
@@ -25,7 +25,7 @@ public sealed class SessionTracker : IDisposable
         _repository = repository;
         _idleThreshold = idleThreshold ?? TimeSpan.FromMinutes(5);//默认空闲阈值为5分钟,FromMinutes是一个静态方法，返回一个TimeSpan对象，表示指定的分钟数
         _foregroundTracker = new ForegroundWindowTracker();
-        _foregroundTracker.ForegroundChanged += OnForegroundChanged;
+        _foregroundTracker.ForegroundChanged += OnForegroundChanged;//订阅前台窗口变化事件
         _idleTimer = new System.Threading.Timer(CheckIdle, null, Timeout.Infinite, Timeout.Infinite);//初始化定时器，第一次不启动，后续由Start方法启动
     }
     // 开始跟踪会话

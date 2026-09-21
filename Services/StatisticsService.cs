@@ -7,10 +7,12 @@ using ActivityTracker.Models;
 
 namespace ActivityTracker.Services;
 
+//统计服务
 public sealed class StatisticsService
 {
     private readonly ActivityRepository _repository;
 
+    //统计依赖于数据库
     public StatisticsService(
         ActivityRepository repository)
     {

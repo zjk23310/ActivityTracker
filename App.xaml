@@ -1,8 +1,17 @@
 <Application x:Class="ActivityTracker.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             StartupUri="MainWindow.xaml"
              ShutdownMode="OnExplicitShutdown">
+
+    <!-- Class="ActivityTracker.App"表示这个App.xaml对应的后台代码类是ActivityTracker.App 
+         xmlns 可以理解为XML Namespace，是XML的命名空间声明，WPF使用了很多自定义的XML标签，所以需要声明这些标签的命名空间。
+         :xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 是WPF的XAML命名空间声明，x:是WPF的XAML命名空间前缀，表示后续的标签都是WPF的XAML标签。
+         这里故意不写 StartupUri：ActivityTracker 现在用了 Hosting + 依赖注入，MainWindow 里面还依赖其他对象，所以不希望 WPF 自己直接创建窗口。
+         主窗口改由 App.OnStartup 从依赖注入容器里取，
+         这样才能先做单实例检查、再启动追踪服务，最后才显示窗口。
+         另外托盘模式下只能显式退出，所以用 OnExplicitShutdown。必须明确调用 Shutdown() 才退出。 
+    -->
+    
     <Application.Resources>
     </Application.Resources>
 </Application>
