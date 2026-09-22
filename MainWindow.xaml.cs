@@ -162,6 +162,8 @@ public partial class MainWindow : Window
             ProcessName = session.ProcessName,
             WindowTitle = session.WindowTitle,
             ExecutablePath = session.ExecutablePath,
+            AppId = session.AppId,
+            AppName = session.AppName,
             StartTime = actualStart,
             EndTime = actualEnd,
             DurationSeconds =

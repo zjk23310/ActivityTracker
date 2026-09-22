@@ -67,7 +67,8 @@ public sealed class ForegroundWindowTracker : IDisposable
             ForegroundChanged?.Invoke(new WindowInfo(//最终流出，进程名，标题名以及可执行文件路径,?表示若不为空则执行，也就是订阅之后执行
                 process.ProcessName,
                 sb.ToString(),
-                path));
+                path,
+                (int)pid));
         }
         catch
         {
@@ -113,4 +114,11 @@ public sealed class ForegroundWindowTracker : IDisposable
 }
 
 //本质是个类或结构体
-public sealed record WindowInfo(string ProcessName, string WindowTitle, string ExecutablePath);
+// 这里只保存从前台窗口直接取得的原始信息。
+// ProcessId 供 AppIdentityResolver 在进程仍存活时读取 Windows 包身份，
+// 不写入活动记录，也不承担应用身份判断职责。
+public sealed record WindowInfo(
+    string ProcessName,
+    string WindowTitle,
+    string ExecutablePath,
+    int ProcessId);

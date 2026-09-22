@@ -135,7 +135,7 @@
 
                 <DataGridTextColumn
                     Header="应用"
-                    Binding="{Binding ProcessName}"
+                    Binding="{Binding AppName}"
                     Width="180"/>
 
                 <DataGridTextColumn

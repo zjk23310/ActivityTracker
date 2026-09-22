@@ -85,3 +85,8 @@ C:\Users\29816\.codex\.chatgpt-projects\g-p-6aa9f96eec148191a0ccb125a3f54ecf\ver
 C:\Users\29816\.codex\.chatgpt-projects\g-p-6aa9f96eec148191a0ccb125a3f54ecf\verification-build\ActivityTracker.runtimeconfig.json
 C:\Users\29816\.codex\.chatgpt-projects\g-p-6aa9f96eec148191a0ccb125a3f54ecf\verification-build\ActivityTracker.dll
 C:\Users\29816\.codex\.chatgpt-projects\g-p-6aa9f96eec148191a0ccb125a3f54ecf\verification-build\ActivityTracker.pdb
+E:\ActivityTracker\build-validation\bin2\ActivityTracker.exe
+E:\ActivityTracker\build-validation\bin2\ActivityTracker.deps.json
+E:\ActivityTracker\build-validation\bin2\ActivityTracker.runtimeconfig.json
+E:\ActivityTracker\build-validation\bin2\ActivityTracker.dll
+E:\ActivityTracker\build-validation\bin2\ActivityTracker.pdb

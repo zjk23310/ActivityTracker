@@ -18,6 +18,12 @@ internal static class AppPaths//静态工具类
     // SQLite 数据库文件
     public static string DatabasePath =>
         Path.Combine(Root, "activity.db");
+
+    public static string SettingsPath =>
+        Path.Combine(Root, "settings.json");
+
+    public static string LogsDirectory =>
+        Path.Combine(Root, "Logs");
     /*
       public static string DatabasePath
     {
@@ -33,5 +39,6 @@ internal static class AppPaths//静态工具类
     public static void EnsureDataDirectory()
     {
         Directory.CreateDirectory(Root);//如果目录不存在就创建目录，如果存在就什么都不做
+        Directory.CreateDirectory(LogsDirectory);
     }
 }

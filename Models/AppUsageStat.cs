@@ -4,6 +4,12 @@ namespace ActivityTracker.Models;
 
 public sealed class AppUsageStat
 {
+    // 逻辑应用身份。统计按该字段聚合。
+    public string AppId { get; init; } = "";
+
+    // 优先来自包身份或 exe 版本资源，用于界面显示。
+    public string AppName { get; init; } = "";
+
     // 用于界面显示
     public string ProcessName { get; init; } = "";
 

@@ -1,11 +1,16 @@
 using System;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
+using ActivityTracker.Configuration;
+using ActivityTracker.Logging;
 using ActivityTracker.Services;
 using ActivityTracker.Startup;
 
@@ -16,6 +21,7 @@ public partial class App : System.Windows.Application
     private IHost? _host;//hosting
     private SingleInstanceGuard? _guard;//防止启动多个
     private MainWindow? _mainWindow;
+    private ILogger<App>? _logger;
     private int _shutdownWatchdogStarted;//退出保险
 
     protected override void OnStartup(StartupEventArgs e)
@@ -56,6 +62,16 @@ public partial class App : System.Windows.Application
 
         AppPaths.EnsureDataDirectory();
 
+        // 设置必须在 Host 和日志系统之前加载：
+        // 空闲阈值、日志级别、保留天数都会影响后续服务的创建。
+        var settingsRepository =
+            new SettingsRepository(AppPaths.SettingsPath);
+
+        var settingsService =
+            new SettingsService(settingsRepository);
+
+        var settings = settingsService.Current;
+
         // ==============================
         // 建立服务容器
         //
@@ -69,10 +85,43 @@ public partial class App : System.Windows.Application
                 ContentRootPath = AppContext.BaseDirectory
             });
 
+        // 调试输出继续保留，同时写入按日期和大小滚动的文件日志。
+        builder.Logging.ClearProviders();
+        builder.Logging.SetMinimumLevel(
+            settings.Logging.GetMinimumLevel());
+        builder.Logging.AddDebug();
+        builder.Logging.AddProvider(
+            new RollingFileLoggerProvider(
+                AppPaths.LogsDirectory,
+                settings.Logging.GetMinimumLevel(),
+                settings.Logging.RetentionDays,
+                settings.Logging.MaxFileSizeMb));
+
+        builder.Services.AddSingleton(settingsRepository);
+        builder.Services.AddSingleton(settingsService);
+
         builder.Services.AddActivityTracker(
             _guard.PipeName);
 
         _host = builder.Build();//注册完成，正式把 Host 建出来。
+        _logger =
+            _host.Services.GetRequiredService<ILogger<App>>();
+
+        RegisterGlobalExceptionHandlers();
+
+        _logger.LogInformation(
+            "ActivityTracker 正在启动。数据库={DatabasePath}，设置={SettingsPath}，日志目录={LogsDirectory}。",
+            AppPaths.DatabasePath,
+            AppPaths.SettingsPath,
+            AppPaths.LogsDirectory);
+
+        if (!string.IsNullOrWhiteSpace(
+                settingsRepository.LastRecoveryMessage))
+        {
+            _logger.LogWarning(
+                "{RecoveryMessage}",
+                settingsRepository.LastRecoveryMessage);
+        }
 
         // ==============================
         // 接线
@@ -106,6 +155,64 @@ public partial class App : System.Windows.Application
         _host.Start();//后台追踪、唤醒监听等需要在这里开始运行。
 
         _mainWindow.Show();
+
+        _logger.LogInformation("ActivityTracker 已启动。");
+    }
+
+    private void RegisterGlobalExceptionHandlers()
+    {
+        DispatcherUnhandledException +=
+            OnDispatcherUnhandledException;
+
+        AppDomain.CurrentDomain.UnhandledException +=
+            OnUnhandledException;
+
+        TaskScheduler.UnobservedTaskException +=
+            OnUnobservedTaskException;
+    }
+
+    private void UnregisterGlobalExceptionHandlers()
+    {
+        DispatcherUnhandledException -=
+            OnDispatcherUnhandledException;
+
+        AppDomain.CurrentDomain.UnhandledException -=
+            OnUnhandledException;
+
+        TaskScheduler.UnobservedTaskException -=
+            OnUnobservedTaskException;
+    }
+
+    private void OnDispatcherUnhandledException(
+        object sender,
+        DispatcherUnhandledExceptionEventArgs e)
+    {
+        _logger?.LogCritical(
+            e.Exception,
+            "WPF UI 线程发生未处理异常。");
+
+        // 不把异常标记为已处理，避免程序在未知状态下继续运行。
+    }
+
+    private void OnUnhandledException(
+        object sender,
+        UnhandledExceptionEventArgs e)
+    {
+        _logger?.LogCritical(
+            e.ExceptionObject as Exception,
+            "进程发生未处理异常。IsTerminating={IsTerminating}",
+            e.IsTerminating);
+    }
+
+    private void OnUnobservedTaskException(
+        object? sender,
+        UnobservedTaskExceptionEventArgs e)
+    {
+        _logger?.LogError(
+            e.Exception,
+            "后台 Task 发生未观察异常。");
+
+        e.SetObserved();
     }
 
     // 管道监听在后台线程上触发，切回 UI 线程再动窗口
@@ -178,6 +285,7 @@ public partial class App : System.Windows.Application
     protected override void OnExit(ExitEventArgs e)//程序真正退出时执行
     {
         Debug.WriteLine("[关闭] App.OnExit 开始.");
+        _logger?.LogInformation("ActivityTracker 正在退出。");
 
         if (_host is not null)
         {
@@ -218,14 +326,22 @@ public partial class App : System.Windows.Application
                 Debug.WriteLine(
                     $"[关闭] Host stop 失败: {ex}");
 
+                _logger?.LogError(
+                    ex,
+                    "停止 Host 时发生异常。");
+
                 // 退出阶段的异常不再往上抛，
                 // 否则会盖掉正常的退出流程
             }
 
             Debug.WriteLine("[关闭] Disposing Host.");
+            _logger?.LogInformation("正在释放 Host。");
+
+            UnregisterGlobalExceptionHandlers();
             _host.Dispose();
             Debug.WriteLine("[关闭] Host disposed.");
             _host = null;
+            _logger = null;
         }
 
         Debug.WriteLine("[关闭] Disposing single-instance guard.");

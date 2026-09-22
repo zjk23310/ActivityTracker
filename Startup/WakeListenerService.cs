@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace ActivityTracker.Startup;
 
@@ -14,6 +15,7 @@ namespace ActivityTracker.Startup;
 internal sealed class WakeListenerService : IHostedService//实现IHostedService接口，表示这是一个托管服务
 {
     private readonly string _pipeName;
+    private readonly ILogger<WakeListenerService> _logger;
 
     private CancellationTokenSource? _cts;//取消令牌源，用于取消监听循环
     private Task? _listenLoop;//Task表示监听循环的任务
@@ -22,14 +24,18 @@ internal sealed class WakeListenerService : IHostedService//实现IHostedService
     // 注意：这个事件是在后台线程上触发的。
     public event Action? WakeRequested;//唤醒请求事件
 
-    public WakeListenerService(string pipeName)
+    public WakeListenerService(
+        string pipeName,
+        ILogger<WakeListenerService> logger)
     {
         _pipeName = pipeName;
+        _logger = logger;
     }
 
     public Task StartAsync(
         CancellationToken cancellationToken)//CancellationToken表示取消操作的通知，允许在操作执行期间取消操作
     {
+        _logger.LogInformation("正在启动单实例唤醒监听。");
         _cts = new CancellationTokenSource();
         _listenLoop = Task.Run(
             () => ListenLoopAsync(_cts.Token));
@@ -40,6 +46,7 @@ internal sealed class WakeListenerService : IHostedService//实现IHostedService
     public async Task StopAsync(
         CancellationToken cancellationToken)
     {
+        _logger.LogInformation("正在停止单实例唤醒监听。");
         _cts?.Cancel();
 
         if (_listenLoop is not null)
@@ -67,6 +74,7 @@ internal sealed class WakeListenerService : IHostedService//实现IHostedService
         }
 
         _cts = null;
+        _logger.LogInformation("单实例唤醒监听已停止。");
     }
 
     // 监听循环：不断创建管道，等待连接。
@@ -91,8 +99,12 @@ internal sealed class WakeListenerService : IHostedService//实现IHostedService
                 // 只有真的收到取消才退出
                 break;
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogWarning(
+                    ex,
+                    "命名管道监听失败，稍后重试。");
+
                 // 管道名被占用之类的异常，
                 // 稍等一下再重建，避免忙等把 CPU 跑满
                 try
@@ -116,11 +128,14 @@ internal sealed class WakeListenerService : IHostedService//实现IHostedService
             // 唤醒功能以后再也不会生效，而且没有任何迹象。
             try
             {
+                _logger.LogDebug("收到另一个实例的窗口唤醒请求。");
                 WakeRequested?.Invoke();
             }
-            catch
+            catch (Exception ex)
             {
-                // 订阅者出错不影响监听本身
+                _logger.LogError(
+                    ex,
+                    "处理窗口唤醒请求时发生异常。");
             }
         }
     }

@@ -2,7 +2,9 @@ using System;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
+using ActivityTracker.Configuration;
 using ActivityTracker.Data;
 using ActivityTracker.Services;
 
@@ -14,11 +16,6 @@ namespace ActivityTracker.Startup;
 // 主要作用是告诉Hosting容器如何创建这些服务对象，以及它们的生命周期（单例、瞬态、作用域等）。
 internal static class ServiceRegistration
 {
-    // 空闲判定阈值。暂时写死，
-    // 以后接入配置文件时改成从 Settings 读。
-    private static readonly TimeSpan IdleThreshold =
-        TimeSpan.FromMinutes(5);
-
     public static IServiceCollection AddActivityTracker(
         this IServiceCollection services,
         string wakePipeName)
@@ -44,12 +41,19 @@ internal static class ServiceRegistration
         // 业务服务
         // ==============================
 
+        services.AddSingleton<AppIdentityResolver>();
         services.AddSingleton<StatisticsService>();//构造函数中有依赖注入的参数，容器会自动解析
 
         services.AddSingleton(sp =>
             new SessionTracker(
                 sp.GetRequiredService<ActivityRepository>(),
-                IdleThreshold));
+                sp.GetRequiredService<AppIdentityResolver>(),
+                TimeSpan.FromMinutes(
+                    sp.GetRequiredService<SettingsService>()
+                        .Current
+                        .Tracking
+                        .IdleThresholdMinutes),
+                sp.GetRequiredService<ILogger<SessionTracker>>()));
 
         // ==============================
         // 托盘
@@ -69,8 +73,10 @@ internal static class ServiceRegistration
         services.AddSingleton<IHostedService>(
             sp => sp.GetRequiredService<TrackingHostedService>());
 
-        services.AddSingleton(
-            _ => new WakeListenerService(wakePipeName));
+        services.AddSingleton(sp =>
+            new WakeListenerService(
+                wakePipeName,
+                sp.GetRequiredService<ILogger<WakeListenerService>>()));
         services.AddSingleton<IHostedService>(
             sp => sp.GetRequiredService<WakeListenerService>());
 

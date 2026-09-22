@@ -13,6 +13,8 @@ internal static class SqlConstants
             ProcessName TEXT NOT NULL,
             WindowTitle TEXT NOT NULL,
             ExecutablePath TEXT NOT NULL,
+            AppId TEXT NOT NULL DEFAULT '',
+            AppName TEXT NOT NULL DEFAULT '',
             StartTime TEXT NOT NULL,
             EndTime TEXT NOT NULL,
             DurationSeconds INTEGER NOT NULL,
@@ -22,15 +24,24 @@ internal static class SqlConstants
         ON ActivitySessions(StartTime);
         """;
 
+    // AppId 列需要先通过迁移补齐，所以这个索引在迁移后单独创建。
+    public const string CreateActivitySessionsAppIdIndex = """
+        CREATE INDEX IF NOT EXISTS IX_ActivitySessions_AppId
+        ON ActivitySessions(AppId);
+        """;
+
     public const string InsertActivitySession = """
         INSERT INTO ActivitySessions
-        (ProcessName, WindowTitle, ExecutablePath, StartTime, EndTime, DurationSeconds, IsIdle)
+        (ProcessName, WindowTitle, ExecutablePath, AppId, AppName,
+         StartTime, EndTime, DurationSeconds, IsIdle)
         VALUES
-        ($process, $title, $path, $start, $end, $duration, $idle);
+        ($process, $title, $path, $appId, $appName,
+         $start, $end, $duration, $idle);
         """;
 
     public const string SelectActivitySessionsByRange = """
         SELECT Id, ProcessName, WindowTitle, ExecutablePath,
+               AppId, AppName,
                StartTime, EndTime, DurationSeconds, IsIdle
         FROM ActivitySessions
         WHERE StartTime < $end AND EndTime > $start

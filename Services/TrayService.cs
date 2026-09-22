@@ -1,5 +1,7 @@
 using System;
 
+using Microsoft.Extensions.Logging;
+
 using Forms = System.Windows.Forms;
 
 namespace ActivityTracker.Services;
@@ -14,6 +16,7 @@ public sealed class TrayService : IDisposable
 {
     private readonly Forms.NotifyIcon _notifyIcon;//NotifyIcon 是 WinForms 的托盘图标类，WPF 没有自带的托盘图标类，所以这里用 WinForms 的
     private readonly Forms.ContextMenuStrip _menu;//ContextMenuStrip 是 WinForms 的右键菜单类，WPF 没有自带的右键菜单类，所以这里用 WinForms 的
+    private readonly ILogger<TrayService> _logger;
 
     // 气泡提示只弹一次
     private bool _tipShown;
@@ -28,8 +31,9 @@ public sealed class TrayService : IDisposable
     // 用户要求真正退出程序
     public event Action? ExitRequested;
 
-    public TrayService()
+    public TrayService(ILogger<TrayService> logger)
     {
+        _logger = logger;
         _notifyIcon = new Forms.NotifyIcon
         {
             Text = "ActivityTracker",
@@ -63,6 +67,8 @@ public sealed class TrayService : IDisposable
         _menu.Items.Add(exitItem);
 
         _notifyIcon.ContextMenuStrip = _menu;
+
+        _logger.LogInformation("系统托盘已创建。");
     }
 
     // 第一次隐藏到托盘时提醒用户，之后不再打扰
@@ -92,5 +98,7 @@ public sealed class TrayService : IDisposable
         _notifyIcon.ContextMenuStrip = null;
         _notifyIcon.Dispose();
         _menu.Dispose();
+
+        _logger.LogInformation("系统托盘已释放。");
     }
 }

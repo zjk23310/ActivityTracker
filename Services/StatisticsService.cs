@@ -11,12 +11,15 @@ namespace ActivityTracker.Services;
 public sealed class StatisticsService
 {
     private readonly ActivityRepository _repository;
+    private readonly AppIdentityResolver _appIdentityResolver;
 
     //统计依赖于数据库
     public StatisticsService(
-        ActivityRepository repository)
+        ActivityRepository repository,
+        AppIdentityResolver appIdentityResolver)
     {
         _repository = repository;
+        _appIdentityResolver = appIdentityResolver;
     }
 
     // 统计指定时间范围内各应用使用时长
@@ -44,6 +47,11 @@ public sealed class StatisticsService
         {
             sessions.Add(currentSnapshot);
         }
+
+        // 历史记录可能很多，同一路径只解析一次版本资源。
+        var legacyIdentityCache =
+            new Dictionary<string, AppIdentity>(
+                StringComparer.OrdinalIgnoreCase);
 
 
         // 第二步：
@@ -76,6 +84,9 @@ public sealed class StatisticsService
                 {
                     session.ProcessName,
                     session.ExecutablePath,
+                    Identity = ResolveIdentity(
+                        session,
+                        legacyIdentityCache),
                     Seconds = seconds
                 };
             })
@@ -87,9 +98,7 @@ public sealed class StatisticsService
         // 按应用进行分组
         var result = pieces
             .GroupBy(
-                x => GetApplicationKey(
-                    x.ExecutablePath,
-                    x.ProcessName),
+                x => x.Identity.AppId,
                 StringComparer.OrdinalIgnoreCase)
 
             // 第四步：
@@ -100,6 +109,12 @@ public sealed class StatisticsService
 
                 return new AppUsageStat
                 {
+                    AppId =
+                        first.Identity.AppId,
+
+                    AppName =
+                        first.Identity.AppName,
+
                     ProcessName =
                         first.ProcessName,
 
@@ -124,21 +139,50 @@ public sealed class StatisticsService
         return result;
     }
 
-    // 确定一个应用的唯一识别 Key
-    private static string GetApplicationKey(
-        string executablePath,
-        string processName)
+    private AppIdentity ResolveIdentity(
+        ActivitySession session,
+        IDictionary<string, AppIdentity> legacyIdentityCache)
     {
-        // 优先使用 exe 完整路径
-        if (!string.IsNullOrWhiteSpace(
-                executablePath))
+        // 新记录直接使用已经落库的逻辑身份。
+        if (!string.IsNullOrWhiteSpace(session.AppId))
         {
-            return executablePath.Trim();
+            var appName = session.AppName;
+
+            // 兼容未来可能出现的“已有 AppId、缺少显示名”记录。
+            if (string.IsNullOrWhiteSpace(appName))
+            {
+                appName = _appIdentityResolver.Resolve(
+                        session.ProcessName,
+                        session.ExecutablePath)
+                    .AppName;
+            }
+
+            return new AppIdentity(
+                session.AppId.Trim(),
+                appName,
+                AppIdentitySource.Persisted);// Persisted 表示已经落库的记录
         }
 
-        // 某些系统进程无法获取路径，
-        // 就退回使用进程名
-        return "PROCESS:" +
-               processName.Trim();
+        // 历史记录没有 AppId：通过同一个 Resolver 即时解析。
+        // 即使原 exe 已删除，Resolver 也会退回路径或进程名，
+        // 因此旧记录仍然会出现在统计结果中。
+        var legacyKey =
+            !string.IsNullOrWhiteSpace(session.ExecutablePath)
+                ? "path:" + session.ExecutablePath.Trim()
+                : "process:" + session.ProcessName.Trim();
+
+        if (legacyIdentityCache.TryGetValue(
+                legacyKey,
+                out var cachedIdentity))
+        {
+            return cachedIdentity;
+        }
+
+        var resolved = _appIdentityResolver.Resolve(
+            session.ProcessName,
+            session.ExecutablePath);
+
+        legacyIdentityCache[legacyKey] = resolved;
+        return resolved;
     }
 }

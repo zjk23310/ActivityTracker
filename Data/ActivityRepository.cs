@@ -29,9 +29,25 @@ public sealed class ActivityRepository
         command.CommandText =
             SqlConstants.CreateActivitySessionsTable;
         command.ExecuteNonQuery();
+
+        // 旧数据库没有逻辑应用身份列；增量补列，保留全部原始记录。
+        SqliteSchemaHelper.EnsureColumn(
+            connection,
+            "ActivitySessions",
+            "AppId",
+            "TEXT NOT NULL DEFAULT ''");
+
+        SqliteSchemaHelper.EnsureColumn(
+            connection,
+            "ActivitySessions",
+            "AppName",
+            "TEXT NOT NULL DEFAULT ''");
+
+        command.CommandText =
+            SqlConstants.CreateActivitySessionsAppIdIndex;
+        command.ExecuteNonQuery();
     }
 
-    //����Ự����
     public void Insert(ActivitySession session)
     {
         using var connection = new SqliteConnection(_connectionString);
@@ -44,6 +60,8 @@ public sealed class ActivityRepository
         command.Parameters.AddWithValue("$process", session.ProcessName);
         command.Parameters.AddWithValue("$title", session.WindowTitle);
         command.Parameters.AddWithValue("$path", session.ExecutablePath);
+        command.Parameters.AddWithValue("$appId", session.AppId);
+        command.Parameters.AddWithValue("$appName", session.AppName);
         command.Parameters.AddWithValue("$start", session.StartTime.ToString("O"));
         command.Parameters.AddWithValue("$end", session.EndTime.ToString("O"));
         command.Parameters.AddWithValue("$duration", session.DurationSeconds);
@@ -83,10 +101,12 @@ public sealed class ActivityRepository
                 ProcessName = reader.GetString(1),
                 WindowTitle = reader.GetString(2),
                 ExecutablePath = reader.GetString(3),
-                StartTime = DateTime.Parse(reader.GetString(4)),
-                EndTime = DateTime.Parse(reader.GetString(5)),
-                DurationSeconds = reader.GetInt32(6),
-                IsIdle = reader.GetInt32(7) != 0
+                AppId = reader.GetString(4),
+                AppName = reader.GetString(5),
+                StartTime = DateTime.Parse(reader.GetString(6)),
+                EndTime = DateTime.Parse(reader.GetString(7)),
+                DurationSeconds = reader.GetInt32(8),
+                IsIdle = reader.GetInt32(9) != 0
             });
         }
         //result��һ���Ự����
