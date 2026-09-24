@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
 E:\ActivityTracker\ActivityTracker\App.xaml
-4810220545
+201908662750
 
-31-1317528069
-238-245796861
-MainWindow.xaml;Views\AddTodoDialog.xaml;Views\DiaryTodoView.xaml;Views\StatisticsView.xaml;
+50-1995617931
+2382064949519
+MainWindow.xaml;Themes\Controls.Button.xaml;Themes\Controls.Card.xaml;Themes\Controls.CheckBox.xaml;Themes\Controls.ComboBox.xaml;Themes\Controls.DataGrid.xaml;Themes\Controls.List.xaml;Themes\Controls.Progress.xaml;Themes\Controls.ScrollBar.xaml;Themes\Controls.TabControl.xaml;Themes\Controls.TextBox.xaml;Themes\DesignTokens.Dark.xaml;Themes\DesignTokens.Light.xaml;Themes\Metrics.xaml;Themes\Theme.Dark.xaml;Themes\Typography.xaml;Views\AddTodoDialog.xaml;Views\Dev\StyleGalleryWindow.xaml;Views\DiaryTodoView.xaml;Views\StatisticsView.xaml;
 
 False
 

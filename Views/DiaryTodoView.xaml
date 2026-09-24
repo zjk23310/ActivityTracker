@@ -11,7 +11,7 @@
     </UserControl.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto"
-                  Padding="18">
+                  Padding="{StaticResource Page.Padding}">
 
         <StackPanel>
 
@@ -20,7 +20,7 @@
             <!-- ========================= -->
 
             <TextBlock Text="日记与待办"
-                       FontSize="26"
+                       FontSize="{StaticResource Size.H1}"
                        FontWeight="SemiBold"
                        Margin="0,0,0,14"/>
 
@@ -42,16 +42,17 @@
             <!-- ========================= -->
 
             <Border Padding="14"
+                    Style="{StaticResource Card}"
                     Margin="0,0,0,18"
-                    BorderBrush="#DDDDDD"
+                    BorderBrush="{DynamicResource Brush.Border.Subtle}"
                     BorderThickness="1"
-                    CornerRadius="6">
+                    CornerRadius="{StaticResource Radius.Md}">
 
                 <StackPanel>
 
                     <Grid Margin="0,0,0,10">
                         <TextBlock Text="日记"
-                                   FontSize="16"
+                                   FontSize="{StaticResource Size.H2}"
                                    FontWeight="SemiBold"
                                    VerticalAlignment="Center"/>
                         <Button Content="保存"
@@ -102,7 +103,7 @@
                     <!-- 正文 -->
                     <TextBox x:Name="DiaryTextBox"
                              MinHeight="150"
-                             FontSize="14"
+                             FontSize="{StaticResource Size.Body}"
                              AcceptsReturn="True"
                              TextWrapping="Wrap"
                              VerticalScrollBarVisibility="Auto"
@@ -128,8 +129,8 @@
 
                         <TextBlock Grid.Column="2"
                                    Text="多个用逗号分隔"
-                                   Foreground="#999999"
-                                   FontSize="11"
+                                   Foreground="{DynamicResource Brush.Text.Tertiary}"
+                                   FontSize="{StaticResource Size.Caption}"
                                    VerticalAlignment="Center"
                                    Margin="8,0,0,0"/>
 
@@ -144,15 +145,16 @@
             <!-- ========================= -->
 
             <Border Padding="14"
-                    BorderBrush="#DDDDDD"
+                    Style="{StaticResource Card}"
+                    BorderBrush="{DynamicResource Brush.Border.Subtle}"
                     BorderThickness="1"
-                    CornerRadius="6">
+                    CornerRadius="{StaticResource Radius.Md}">
 
                 <StackPanel>
 
                     <Grid Margin="0,0,0,10">
                         <TextBlock Text="待办事项"
-                                   FontSize="16"
+                                   FontSize="{StaticResource Size.H2}"
                                    FontWeight="SemiBold"
                                    VerticalAlignment="Center"/>
                         <Button Content="添加待办"
@@ -167,8 +169,8 @@
                             <DataTemplate>
                                 <Border Padding="8,6"
                                         Margin="0,0,0,4"
-                                        Background="#F8F8F8"
-                                        CornerRadius="4">
+                                        Background="{DynamicResource Brush.Bg.Sunken}"
+                                        CornerRadius="{StaticResource Radius.Sm}">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
@@ -187,16 +189,16 @@
                                             <!-- 优先级标记 + 标题 -->
                                             <StackPanel Orientation="Horizontal">
 
-                                                <Border Background="#FDE7E7"
-                                                        CornerRadius="3"
+                                                <Border Background="{DynamicResource Brush.State.DangerMuted}"
+                                                        CornerRadius="{StaticResource Radius.Sm}"
                                                         Padding="5,1"
                                                         Margin="0,0,6,0"
                                                         VerticalAlignment="Center"
                                                         Visibility="{Binding PriorityText,
                                                             Converter={StaticResource EmptyToCollapsed}}">
                                                     <TextBlock Text="{Binding PriorityText}"
-                                                               Foreground="#C00000"
-                                                               FontSize="11"/>
+                                                               Foreground="{DynamicResource Brush.State.Danger}"
+                                                               FontSize="{StaticResource Size.Caption}"/>
                                                 </Border>
 
                                                 <TextBlock Text="{Binding Title}"
@@ -209,8 +211,8 @@
 
                                             <!-- 分类 · 时刻 · 备注 -->
                                             <TextBlock Text="{Binding DetailText}"
-                                                       Foreground="#888888"
-                                                       FontSize="11"
+                                                       Foreground="{DynamicResource Brush.Text.Secondary}"
+                                                       FontSize="{StaticResource Size.Caption}"
                                                        TextWrapping="Wrap"
                                                        Margin="0,2,0,0"
                                                        Visibility="{Binding DetailText,
@@ -220,8 +222,8 @@
 
                                         <Button Grid.Column="2"
                                                 Content="删除"
-                                                FontSize="11"
-                                                Foreground="Red"
+                                                FontSize="{StaticResource Size.Caption}"
+                                                Foreground="{DynamicResource Brush.State.Danger}"
                                                 Background="Transparent"
                                                 BorderThickness="0"
                                                 Cursor="Hand"
@@ -238,7 +240,7 @@
                     <!-- 待办为空时的提示 -->
                     <TextBlock x:Name="NoTodoHint"
                                Text="暂无待办事项"
-                               Foreground="#999999"
+                               Foreground="{DynamicResource Brush.Text.Tertiary}"
                                HorizontalAlignment="Center"
                                Margin="0,10,0,0"
                                Visibility="Visible"/>

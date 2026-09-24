@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -10,9 +11,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 using ActivityTracker.Configuration;
+using ActivityTracker.Data;
 using ActivityTracker.Logging;
 using ActivityTracker.Services;
 using ActivityTracker.Startup;
+using ActivityTracker.Views.Dev;
 
 namespace ActivityTracker;
 
@@ -21,12 +24,18 @@ public partial class App : System.Windows.Application
     private IHost? _host;//hosting
     private SingleInstanceGuard? _guard;//防止启动多个
     private MainWindow? _mainWindow;
+    private StyleGalleryWindow? _styleGalleryWindow;
     private ILogger<App>? _logger;
     private int _shutdownWatchdogStarted;//退出保险
 
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+        var showStyleGallery = e.Args.Any(argument =>
+            string.Equals(
+                argument,
+                "--style-gallery",
+                StringComparison.OrdinalIgnoreCase));
 
         // ==============================
         // 单实例检查
@@ -123,6 +132,38 @@ public partial class App : System.Windows.Application
                 settingsRepository.LastRecoveryMessage);
         }
 
+        // 迁移必须发生在解析仓储、窗口和后台追踪器之前。
+        // DatabaseMigrator 会先直接读取 SQLite 文件头并备份，随后才打开首个连接。
+        try
+        {
+            _host.Services
+                .GetRequiredService<DatabaseMigrator>()
+                .Migrate();
+        }
+        catch (DatabaseMigrationException ex)
+        {
+            _logger.LogCritical(ex, "数据库迁移失败，程序将退出。");
+
+            var backupText = string.IsNullOrWhiteSpace(ex.BackupPath)
+                ? "未生成备份。"
+                : $"迁移前备份：{ex.BackupPath}";
+
+            System.Windows.MessageBox.Show(
+                $"ActivityTracker 无法升级数据库，因此没有启动追踪。\n\n{ex.InnerException?.Message ?? ex.Message}\n\n{backupText}",
+                "数据库迁移失败",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+
+            UnregisterGlobalExceptionHandlers();
+            _host.Dispose();
+            _host = null;
+            _logger = null;
+            _guard?.Dispose();
+            _guard = null;
+            Shutdown();
+            return;
+        }
+
         // ==============================
         // 接线
         //
@@ -130,8 +171,16 @@ public partial class App : System.Windows.Application
         // 真正操作窗口的动作在这里接上，
         // 这样 TrayService 就不用反过来依赖 MainWindow。
         // ==============================
-        _mainWindow =
-            _host.Services.GetRequiredService<MainWindow>();//Hosting 就会查看 MainWindow 的构造函数需要什么，并自动解决依赖
+        if (showStyleGallery)
+        {
+            _styleGalleryWindow = _host.Services
+                .GetRequiredService<StyleGalleryWindow>();
+        }
+        else
+        {
+            _mainWindow =
+                _host.Services.GetRequiredService<MainWindow>();//Hosting 就会查看 MainWindow 的构造函数需要什么，并自动解决依赖
+        }
 
         var tray = _host.Services
             .GetRequiredService<TrayService>();
@@ -154,7 +203,10 @@ public partial class App : System.Windows.Application
         // 追踪器仍然会在窗口显示之前启动。
         _host.Start();//后台追踪、唤醒监听等需要在这里开始运行。
 
-        _mainWindow.Show();
+        if (_styleGalleryWindow is not null)
+            _styleGalleryWindow.Show();
+        else
+            _mainWindow!.Show();
 
         _logger.LogInformation("ActivityTracker 已启动。");
     }
@@ -227,7 +279,7 @@ public partial class App : System.Windows.Application
             // 而退出时 UI 线程正阻塞在 OnExit 里等待 StopAsync，
             // 两者相遇就是死锁。
             Dispatcher.InvokeAsync(//让 WPF 的 UI 线程去执行窗口操作。
-                () => _mainWindow?.RestoreFromTray());
+                RestorePrimaryWindow);
         }
         catch
         {
@@ -241,7 +293,7 @@ public partial class App : System.Windows.Application
             return;
 
         Dispatcher.InvokeAsync(
-            () => _mainWindow?.RestoreFromTray());
+            RestorePrimaryWindow);
     }
 
     private void OnTrayExitRequested()
@@ -251,8 +303,35 @@ public partial class App : System.Windows.Application
 
         StartShutdownWatchdog();
 
-        Dispatcher.InvokeAsync(
-            () => _mainWindow?.RequestExit());
+        Dispatcher.InvokeAsync(() =>
+        {
+            if (_mainWindow is not null)
+            {
+                _mainWindow.RequestExit();
+                return;
+            }
+
+            _host?.Services.GetService<TrayService>()?.Dispose();
+            _styleGalleryWindow?.Close();
+            Shutdown();
+        });
+    }
+
+    private void RestorePrimaryWindow()
+    {
+        if (_mainWindow is not null)
+        {
+            _mainWindow.RestoreFromTray();
+            return;
+        }
+
+        if (_styleGalleryWindow is null)
+            return;
+
+        _styleGalleryWindow.Show();
+        if (_styleGalleryWindow.WindowState == WindowState.Minimized)
+            _styleGalleryWindow.WindowState = WindowState.Normal;
+        _styleGalleryWindow.Activate();
     }
 
     private void StartShutdownWatchdog()
@@ -266,7 +345,7 @@ public partial class App : System.Windows.Application
 
         var watchdog = new Thread(() =>
         {
-            Thread.Sleep(TimeSpan.FromSeconds(10));
+            Thread.Sleep(TimeSpan.FromSeconds(15));
 
             Debug.WriteLine(
                 "[Shutdown] Cleanup exceeded 10 seconds; " +
@@ -315,9 +394,29 @@ public partial class App : System.Windows.Application
             {
                 Debug.WriteLine("[关闭] Stopping Host.");
 
-                _host.StopAsync(TimeSpan.FromSeconds(5))
+                _host.StopAsync(TimeSpan.FromSeconds(9))
                     .GetAwaiter()
                     .GetResult();
+
+                var drainReport = _host.Services
+                    .GetService<IActivityChangeBus>()?
+                    .LastDrainReport;
+                if (drainReport is null)
+                {
+                    _logger?.LogError(
+                        "退出时未取得活动事件总线排空报告。");
+                }
+                else if (!drainReport.AllDrained)
+                {
+                    foreach (var subscriber in drainReport.Subscribers
+                        .Where(result => !result.Drained))
+                    {
+                        _logger?.LogError(
+                            "退出时活动事件订阅者未排空：Name={Name}，Pending={PendingCount}。",
+                            subscriber.Name,
+                            subscriber.PendingCount);
+                    }
+                }
 
                 Debug.WriteLine("[关闭] Host 停止.");
             }

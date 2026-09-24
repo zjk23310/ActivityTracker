@@ -14,7 +14,7 @@
 
         <TabItem Header="活动记录">
 
-            <Grid Margin="18">
+            <Grid Margin="{StaticResource Page.Padding}">
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -24,7 +24,7 @@
 
                 <TextBlock Grid.Row="0"
                            Text="ActivityTracker"
-                           FontSize="26"
+                           FontSize="{StaticResource Size.H1}"
                            FontWeight="SemiBold"/>
 
                 <StackPanel Grid.Row="1"

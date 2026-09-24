@@ -61,7 +61,8 @@ internal sealed class WakeListenerService : IHostedService//实现IHostedService
             // 监听线程留在那里无所谓，进程本来就要退出了。
             await Task.WhenAny(
                 _listenLoop,
-                Task.Delay(1500));
+                Task.Delay(1500))
+                .ConfigureAwait(false);
         }
 
         try

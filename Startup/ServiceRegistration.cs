@@ -7,6 +7,8 @@ using Microsoft.Extensions.Logging;
 using ActivityTracker.Configuration;
 using ActivityTracker.Data;
 using ActivityTracker.Services;
+using ActivityTracker.Services.Sinks;
+using ActivityTracker.Views.Dev;
 
 namespace ActivityTracker.Startup;
 
@@ -25,35 +27,29 @@ internal static class ServiceRegistration
         // ==============================
 
         //AddSingleton表示只创建一个，第一次创建，之后复用
-        services.AddSingleton(
-            _ => new ActivityRepository(
-                AppPaths.DatabasePath));
-
-        services.AddSingleton(
-            _ => new DailyRepository(
-                AppPaths.DatabasePath));
-
-        services.AddSingleton(
-            _ => new TodoRepository(
-                AppPaths.DatabasePath));
+        services.AddSingleton(sp =>
+            new SqliteConnectionFactory(
+                AppPaths.DatabasePath,
+                sp.GetRequiredService<ILogger<SqliteConnectionFactory>>()));
+        services.AddSingleton<DatabaseMigrator>();
+        services.AddSingleton<ActivityRepository>();
+        services.AddSingleton<DailyRepository>();
+        services.AddSingleton<TodoRepository>();
 
         // ==============================
         // 业务服务
         // ==============================
 
         services.AddSingleton<AppIdentityResolver>();
+        services.AddSingleton<ForegroundWindowTracker>();
+        services.AddSingleton<IClock, SystemClock>();
+        services.AddSingleton<SessionSegmentManager>();
+        services.AddSingleton<TrackingStatusService>();
         services.AddSingleton<StatisticsService>();//构造函数中有依赖注入的参数，容器会自动解析
-
-        services.AddSingleton(sp =>
-            new SessionTracker(
-                sp.GetRequiredService<ActivityRepository>(),
-                sp.GetRequiredService<AppIdentityResolver>(),
-                TimeSpan.FromMinutes(
-                    sp.GetRequiredService<SettingsService>()
-                        .Current
-                        .Tracking
-                        .IdleThresholdMinutes),
-                sp.GetRequiredService<ILogger<SessionTracker>>()));
+        services.AddSingleton<IUiDispatcher, WpfUiDispatcher>();
+        services.AddSingleton<UiActivityNotifier>();
+        services.AddSingleton<IPresencePublisher, LoggingPresencePublisher>();
+        services.AddSingleton<SessionTracker>();
 
         // ==============================
         // 托盘
@@ -68,6 +64,30 @@ internal static class ServiceRegistration
         // Host 启动时会把所有 IHostedService 跑一遍，
         // 同时 App 还能拿到具体类型去订阅它们的事件。
         // ==============================
+
+        services.AddSingleton<PowerEventListener>();
+        services.AddSingleton<IHostedService>(
+            sp => sp.GetRequiredService<PowerEventListener>());
+
+        // 下面五项的相对注册顺序也是关停契约。Host 逆序停止，因此先停
+        // tracker，再停 UI/Presence，最后由 DB sink 排空总线、重试并 checkpoint。
+        services.AddSingleton<ActivityChangeBus>();
+        services.AddSingleton<IActivityChangeBus>(
+            sp => sp.GetRequiredService<ActivityChangeBus>());
+
+        services.AddSingleton<ActivityDatabaseSink>();
+        services.AddSingleton<IHostedService>(
+            sp => sp.GetRequiredService<ActivityDatabaseSink>());
+
+        services.AddSingleton<ActivityPresenceSink>();
+        services.AddSingleton<IPresenceStateProvider>(
+            sp => sp.GetRequiredService<ActivityPresenceSink>());
+        services.AddSingleton<IHostedService>(
+            sp => sp.GetRequiredService<ActivityPresenceSink>());
+
+        services.AddSingleton<ActivityUiSink>();
+        services.AddSingleton<IHostedService>(
+            sp => sp.GetRequiredService<ActivityUiSink>());
 
         services.AddSingleton<TrackingHostedService>();
         services.AddSingleton<IHostedService>(
@@ -90,6 +110,7 @@ internal static class ServiceRegistration
         // ==============================
 
         services.AddSingleton<MainWindow>();
+        services.AddSingleton<StyleGalleryWindow>();
 
         return services;
     }

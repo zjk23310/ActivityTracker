@@ -3,11 +3,31 @@ namespace ActivityTracker.Data;
 // 从各 Repository 中提取的 SQL 语句，避免在业务代码中内联大量 SQL
 internal static class SqlConstants
 {
+    public const string EnableWal = "PRAGMA journal_mode=WAL;";
+    public const string ConfigureConnection = """
+        PRAGMA busy_timeout=5000;
+        PRAGMA foreign_keys=ON;
+        PRAGMA synchronous=NORMAL;
+        """;
+    public const string ConfigureReadOnlyConnection = """
+        PRAGMA busy_timeout=5000;
+        PRAGMA foreign_keys=ON;
+        PRAGMA query_only=ON;
+        """;
+    public const string CheckpointWal =
+        "PRAGMA wal_checkpoint(TRUNCATE);";
+    public const string VacuumInto =
+        "VACUUM INTO $backupPath;";
+    public const string GetUserVersion = "PRAGMA user_version;";
+    public const string SetUserVersion1 = "PRAGMA user_version=1;";
+    public const string SetUserVersion2 = "PRAGMA user_version=2;";
+    public const string QuickCheck = "PRAGMA quick_check;";
+
     // ==============================
     // ActivitySessions（活动记录）
     // ==============================
 
-    public const string CreateActivitySessionsTable = """
+    public const string CreateActivitySessionsTableV1 = """
         CREATE TABLE IF NOT EXISTS ActivitySessions (
             Id INTEGER PRIMARY KEY AUTOINCREMENT,
             ProcessName TEXT NOT NULL,
@@ -20,33 +40,150 @@ internal static class SqlConstants
             DurationSeconds INTEGER NOT NULL,
             IsIdle INTEGER NOT NULL
         );
-        CREATE INDEX IF NOT EXISTS IX_ActivitySessions_StartTime
-        ON ActivitySessions(StartTime);
         """;
 
-    // AppId 列需要先通过迁移补齐，所以这个索引在迁移后单独创建。
-    public const string CreateActivitySessionsAppIdIndex = """
+    public const string CreateActivitySessionsV1Indexes = """
+        CREATE INDEX IF NOT EXISTS IX_ActivitySessions_StartTime
+        ON ActivitySessions(StartTime);
         CREATE INDEX IF NOT EXISTS IX_ActivitySessions_AppId
         ON ActivitySessions(AppId);
         """;
 
-    public const string InsertActivitySession = """
-        INSERT INTO ActivitySessions
+    public const string CreateActivitySessionsV2Indexes = """
+        CREATE INDEX IF NOT EXISTS IX_ActivitySessions_StartUtcMs
+        ON ActivitySessions(StartUtcMs);
+        CREATE INDEX IF NOT EXISTS IX_ActivitySessions_LocalDate
+        ON ActivitySessions(LocalDate);
+        CREATE UNIQUE INDEX IF NOT EXISTS UX_ActivitySessions_SessionKey
+        ON ActivitySessions(SessionKey)
+        WHERE SessionKey <> '';
+        """;
+
+    public const string InsertOrIgnoreActivitySegment = """
+        INSERT OR IGNORE INTO ActivitySessions
         (ProcessName, WindowTitle, ExecutablePath, AppId, AppName,
-         StartTime, EndTime, DurationSeconds, IsIdle)
+         StartTime, EndTime, DurationSeconds, IsIdle,
+         SessionKey, StartUtcMs, EndUtcMs, LocalDate,
+         IsClosed, CloseReason, IsRecovered, Source)
         VALUES
         ($process, $title, $path, $appId, $appName,
-         $start, $end, $duration, $idle);
+         $start, $end, $duration, $idle,
+         $sessionKey, $startUtcMs, $endUtcMs, $localDate,
+         $isClosed, $closeReason, 0, 'live');
+        """;
+
+    public const string SelectActivitySegmentId = """
+        SELECT Id
+        FROM ActivitySessions
+        WHERE SessionKey=$sessionKey;
+        """;
+
+    public const string UpdateOpenActivitySegment = """
+        UPDATE ActivitySessions
+        SET ProcessName=$process,
+            WindowTitle=$title,
+            ExecutablePath=$path,
+            AppId=$appId,
+            AppName=$appName,
+            StartTime=$start,
+            EndTime=$end,
+            DurationSeconds=$duration,
+            IsIdle=$idle,
+            StartUtcMs=$startUtcMs,
+            EndUtcMs=$endUtcMs,
+            LocalDate=$localDate,
+            IsClosed=$isClosed,
+            CloseReason=$closeReason,
+            IsRecovered=$isRecovered,
+            Source=$source
+        WHERE Id=$id AND SessionKey=$sessionKey AND IsClosed=0;
+        """;
+
+    public const string UpdateClosedActivitySegment = """
+        UPDATE ActivitySessions
+        SET ProcessName=$process,
+            WindowTitle=$title,
+            ExecutablePath=$path,
+            AppId=$appId,
+            AppName=$appName,
+            StartTime=$start,
+            EndTime=$end,
+            DurationSeconds=$duration,
+            IsIdle=$idle,
+            StartUtcMs=$startUtcMs,
+            EndUtcMs=$endUtcMs,
+            LocalDate=$localDate,
+            IsClosed=$isClosed,
+            CloseReason=$closeReason,
+            IsRecovered=$isRecovered,
+            Source=$source
+        WHERE Id=$id AND SessionKey=$sessionKey;
+        """;
+
+    public const string SelectActivitySegmentClosedState = """
+        SELECT IsClosed
+        FROM ActivitySessions
+        WHERE Id=$id AND SessionKey=$sessionKey;
         """;
 
     public const string SelectActivitySessionsByRange = """
         SELECT Id, ProcessName, WindowTitle, ExecutablePath,
                AppId, AppName,
-               StartTime, EndTime, DurationSeconds, IsIdle
+               StartTime, EndTime, DurationSeconds, IsIdle,
+               SessionKey, StartUtcMs, EndUtcMs, LocalDate,
+               IsClosed, CloseReason, IsRecovered, Source
         FROM ActivitySessions
-        WHERE StartTime < $end AND EndTime > $start
-        ORDER BY StartTime DESC;
+        WHERE EndUtcMs > $startMs AND StartUtcMs < $endMs
+          AND ($includeOpen = 1 OR IsClosed = 1)
+        ORDER BY StartUtcMs DESC;
         """;
+
+    public const string SelectActivityBackfillBatch = """
+        SELECT Id, StartTime, EndTime
+        FROM ActivitySessions
+        WHERE StartUtcMs = 0 OR EndUtcMs = 0 OR LocalDate = ''
+        ORDER BY Id
+        LIMIT 500;
+        """;
+
+    public const string UpdateActivityBackfill = """
+        UPDATE ActivitySessions
+        SET StartUtcMs=$startUtcMs,
+            EndUtcMs=$endUtcMs,
+            LocalDate=$localDate,
+            IsClosed=1,
+            IsRecovered=0,
+            Source='legacy',
+            CloseReason=''
+        WHERE Id=$id;
+        """;
+
+    public const string RecoverOpenActivitySessions = """
+        UPDATE ActivitySessions
+        SET IsClosed=1,
+            IsRecovered=1,
+            CloseReason='Recovered',
+            Source='recovered'
+        WHERE IsClosed=0;
+        """;
+
+    public const string DeleteEmptyActivitySessions = """
+        DELETE FROM ActivitySessions
+        WHERE DurationSeconds <= 0;
+        """;
+
+    public const string SelectTrackingOpenRowCount =
+        "SELECT COUNT(*) FROM ActivitySessions WHERE IsClosed = 0;";
+
+    public const string ActivitySessionsTableExists = """
+        SELECT EXISTS(
+            SELECT 1
+            FROM sqlite_master
+            WHERE type='table' AND name='ActivitySessions');
+        """;
+
+    public const string SelectActivitySessionCount =
+        "SELECT COUNT(*) FROM ActivitySessions;";
 
     // ==============================
     // Daily（日记）
@@ -67,19 +204,17 @@ internal static class SqlConstants
         );
         """;
 
-    // 用 CreatedAt 回填 Date（按本地时区换算，
-    // 不能直接用 date()，它会先把 ISO 串转成 UTC）
-    public const string MigrateDailyBackfillDate = """
-        UPDATE Daily
-        SET Date = date(CreatedAt, 'localtime')
-        WHERE Date IS NULL OR Date = '';
+    public const string SelectDailyBackfillRows = """
+        SELECT Id, CreatedAt, UpdatedAt, Date
+        FROM Daily
+        WHERE Date = '' OR UpdatedAt = '';
         """;
 
-    // 回填 UpdatedAt：旧数据用 CreatedAt 兜底
-    public const string MigrateDailyBackfillUpdatedAt = """
+    public const string UpdateDailyBackfillRow = """
         UPDATE Daily
-        SET UpdatedAt = CreatedAt
-        WHERE UpdatedAt IS NULL OR UpdatedAt = '';
+        SET Date=$date,
+            UpdatedAt=$updatedAt
+        WHERE Id=$id;
         """;
 
     public const string InsertDaily = """

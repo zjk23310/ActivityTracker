@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -35,13 +36,12 @@ internal sealed class TrackingHostedService : IHostedService
         return Task.CompletedTask;
     }
 
-    public Task StopAsync(
+    public async Task StopAsync(
         CancellationToken cancellationToken)
     {
         _logger.LogInformation("正在停止活动追踪服务。");
-        // Dispose 内部会先结束当前会话段并写入数据库
-        _tracker.Dispose();
+        await _tracker.StopAsync(cancellationToken)
+            .ConfigureAwait(false);
         _logger.LogInformation("活动追踪服务已停止。");
-        return Task.CompletedTask;
     }
 }

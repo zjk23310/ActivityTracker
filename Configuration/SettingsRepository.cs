@@ -99,9 +99,9 @@ public sealed class SettingsRepository
 
         var backupPath = Path.Combine(
             directory,
-            $"settings.invalid-{DateTime.Now:yyyyMMdd-HHmmss}.json");
+            $"settings.invalid-{DateTime.Now:yyyyMMdd-HHmmss-fff}-{Guid.NewGuid():N}.json");
 
-        File.Move(_path, backupPath, overwrite: true);
+        File.Move(_path, backupPath);
 
         var defaults = new AppSettings();
         SaveCore(defaults);

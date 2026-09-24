@@ -7,7 +7,7 @@
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize">
 
-    <Grid Margin="18">
+    <Grid Margin="{StaticResource Page.Padding}">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -28,7 +28,7 @@
 
         <TextBox Grid.Row="1"
                  x:Name="TitleBox"
-                 FontSize="14"
+                 FontSize="{StaticResource Size.Body}"
                  MaxLength="200"/>
 
         <!-- 备注 -->
@@ -38,7 +38,7 @@
 
         <TextBox Grid.Row="3"
                  x:Name="NoteBox"
-                 FontSize="14"
+                 FontSize="{StaticResource Size.Body}"
                  MinHeight="70"
                  AcceptsReturn="True"
                  TextWrapping="Wrap"

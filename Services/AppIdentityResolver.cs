@@ -30,7 +30,7 @@ public sealed class AppIdentityResolver
     public AppIdentityResolver(
         ILogger<AppIdentityResolver> logger)
     {
-        _logger = logger;
+        _logger = logger;//赋值给私有字段_logger，用于记录日志
     }
 
     public AppIdentity Resolve(WindowInfo window)
@@ -402,6 +402,7 @@ public sealed class AppIdentityResolver
             .ToLowerInvariant();
     }
 
+    // 清理显示用的字符串：去掉多余空格、全角半角统一、去掉首尾空格。
     private static string CleanDisplayValue(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -457,6 +458,7 @@ public sealed class AppIdentityResolver
                string.Join("|", parts.Select(EncodeIdPart));
     }
 
+    // 编码 ID 部分
     private static string EncodeIdPart(string value)
     {
         return Uri.EscapeDataString(value);
@@ -476,6 +478,7 @@ public sealed class AppIdentityResolver
             processName);
     }
 
+    // 尝试获取应用的用户模型 ID
     private static bool TryGetApplicationUserModelId(
         IntPtr processHandle,
         out string value,

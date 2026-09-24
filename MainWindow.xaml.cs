@@ -11,8 +11,8 @@ namespace ActivityTracker;
 
 public partial class MainWindow : Window
 {
-    private readonly ActivityRepository _repository;
     private readonly SessionTracker _sessionTracker;
+    private readonly StatisticsService _statisticsService;
 
     // 点 X 隐藏到托盘时要弹一次气泡提示
     private readonly TrayService _trayService;
@@ -28,7 +28,6 @@ public partial class MainWindow : Window
 
     //主窗口需要依赖注入的参数，构造函数里不再 new 这些对象，而是由容器传进来
     public MainWindow(
-        ActivityRepository repository,
         DailyRepository dailyRepository,
         TodoRepository todoRepository,
         SessionTracker sessionTracker,
@@ -37,8 +36,8 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        _repository = repository;
         _sessionTracker = sessionTracker;
+        _statisticsService = statisticsService;
         _trayService = trayService;
 
         // ==============================
@@ -92,31 +91,13 @@ public partial class MainWindow : Window
         var rangeStart = DateTime.Today;
         var rangeEnd = rangeStart.AddDays(1);
 
-        var sessions =
-            _repository.GetRange(
-                rangeStart,
-                rangeEnd);
-
-        // 当前会话尚未写入 SQLite，也要显示并计入汇总。
         var current =
             _sessionTracker.GetCurrentSnapshot();
-
-        if (current is not null &&
-            current.StartTime < rangeEnd &&
-            current.EndTime > rangeStart)
-        {
-            sessions.Add(current);
-        }
-
-        // 会话可能跨过午夜，只显示并统计与今天重叠的部分。
-        var visibleSessions = sessions
-            .Select(session =>
-                ClipToRange(
-                    session,
-                    rangeStart,
-                    rangeEnd))
-            .Where(session => session is not null)
-            .Select(session => session!)
+        var visibleSessions =
+            _statisticsService.GetActivitySessions(
+                rangeStart,
+                rangeEnd,
+                current)
             .OrderByDescending(session => session.StartTime)
             .ToList();
 
@@ -135,41 +116,6 @@ public partial class MainWindow : Window
         SummaryText.Text =
             $"今日记录 {Format(total)}，" +
             $"活跃 {Format(active)}";
-    }
-
-
-    private static ActivitySession? ClipToRange(
-        ActivitySession session,
-        DateTime rangeStart,
-        DateTime rangeEnd)
-    {
-        var actualStart =
-            session.StartTime < rangeStart
-                ? rangeStart
-                : session.StartTime;
-
-        var actualEnd =
-            session.EndTime > rangeEnd
-                ? rangeEnd
-                : session.EndTime;
-
-        if (actualEnd <= actualStart)
-            return null;
-
-        return new ActivitySession
-        {
-            Id = session.Id,
-            ProcessName = session.ProcessName,
-            WindowTitle = session.WindowTitle,
-            ExecutablePath = session.ExecutablePath,
-            AppId = session.AppId,
-            AppName = session.AppName,
-            StartTime = actualStart,
-            EndTime = actualEnd,
-            DurationSeconds =
-                (int)(actualEnd - actualStart).TotalSeconds,
-            IsIdle = session.IsIdle
-        };
     }
 
 

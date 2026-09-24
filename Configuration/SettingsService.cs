@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 
 namespace ActivityTracker.Configuration;
 
@@ -6,14 +7,15 @@ public sealed class SettingsService
 {
     private readonly object _sync = new();
     private readonly SettingsRepository _repository;
+    private AppSettings _current;
 
-    public AppSettings Current { get; private set; }
+    public AppSettings Current => Volatile.Read(ref _current);
     public event Action<AppSettings>? Changed;
 
     public SettingsService(SettingsRepository repository)
     {
         _repository = repository;
-        Current = _repository.Load();
+        _current = _repository.Load();
     }
 
     public void Save(AppSettings settings)
@@ -23,7 +25,7 @@ public sealed class SettingsService
         lock (_sync)
         {
             _repository.Save(settings);
-            Current = settings;
+            Volatile.Write(ref _current, settings);
         }
 
         Changed?.Invoke(settings);
@@ -36,7 +38,7 @@ public sealed class SettingsService
         lock (_sync)
         {
             settings = _repository.Load();
-            Current = settings;
+            Volatile.Write(ref _current, settings);
         }
 
         Changed?.Invoke(settings);

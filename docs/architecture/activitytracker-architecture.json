@@ -1,0 +1,232 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "ActivityTracker 时间管理项目架构",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "viewBox": [1800, 960],
+    "views": [
+      {
+        "id": "trackingPath",
+        "label": "活动追踪主链路",
+        "focus": ["windowsDesktop", "activityCapture", "identityResolver", "sessionTracker", "changeBus", "databaseSink", "sqliteStore"],
+        "note": "从 Windows 前台活动采集开始，经过身份解析和会话切分，最终可靠写入 SQLite。"
+      },
+      {
+        "id": "lifecyclePath",
+        "label": "程序生命周期",
+        "focus": ["lifecycleHost", "settingsAndLogs", "sessionTracker", "userInterface"],
+        "note": "Host 管理后台追踪；关窗只隐藏到托盘，真正退出时停止追踪并完成落库。"
+      },
+      {
+        "id": "consumerPath",
+        "label": "事件消费者",
+        "focus": ["sessionTracker", "changeBus", "databaseSink", "userInterface", "presenceBridge"],
+        "note": "数据库消费完整有序事件，界面和 Presence 只接收最新状态，彼此互不阻塞。"
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "windowsDesktop",
+      "type": "external",
+      "label": "Windows 桌面环境",
+      "sublabel": "前台窗口、空闲与电源事件",
+      "pos": [40, 410],
+      "size": [190, 90]
+    },
+    {
+      "id": "lifecycleHost",
+      "type": "backend",
+      "label": "启动与生命周期",
+      "sublabel": "App + Generic Host + 单实例/托盘",
+      "tag": ".NET 8 WPF",
+      "pos": [820, 110],
+      "size": [220, 96]
+    },
+    {
+      "id": "settingsAndLogs",
+      "type": "database",
+      "label": "配置与运行日志",
+      "sublabel": "settings.json + 滚动文件日志",
+      "pos": [520, 110],
+      "size": [220, 96]
+    },
+    {
+      "id": "activityCapture",
+      "type": "backend",
+      "label": "系统活动采集",
+      "sublabel": "前台窗口、空闲检测、电源恢复",
+      "pos": [300, 410],
+      "size": [200, 90]
+    },
+    {
+      "id": "identityResolver",
+      "type": "backend",
+      "label": "逻辑应用身份解析",
+      "sublabel": "AppId / AppName 与安全 fallback",
+      "pos": [560, 410],
+      "size": [200, 90]
+    },
+    {
+      "id": "sessionTracker",
+      "type": "backend",
+      "label": "会话追踪与切分",
+      "sublabel": "SessionTracker + 状态机",
+      "tag": "心跳 / 跨天 / 恢复",
+      "pos": [820, 410],
+      "size": [220, 90]
+    },
+    {
+      "id": "changeBus",
+      "type": "messagebus",
+      "label": "ActivityChangeBus",
+      "sublabel": "不可变快照与订阅者隔离",
+      "tag": "非阻塞发布",
+      "pos": [1100, 410],
+      "size": [210, 90]
+    },
+    {
+      "id": "databaseSink",
+      "type": "backend",
+      "label": "数据库消费器",
+      "sublabel": "完整有序消费、重试与 checkpoint",
+      "pos": [1100, 650],
+      "size": [220, 96]
+    },
+    {
+      "id": "sqliteStore",
+      "type": "database",
+      "label": "SQLite 本地数据库",
+      "sublabel": "活动、日记、待办与迁移",
+      "tag": "WAL",
+      "pos": [1400, 650],
+      "size": [220, 96]
+    },
+    {
+      "id": "userInterface",
+      "type": "frontend",
+      "label": "WPF 界面与统计",
+      "sublabel": "活动记录、使用统计、日记待办",
+      "pos": [1510, 110],
+      "size": [240, 96]
+    },
+    {
+      "id": "presenceBridge",
+      "type": "external",
+      "label": "Presence 扩展出口",
+      "sublabel": "最新活动状态发布",
+      "tag": "可替换 Publisher",
+      "pos": [1400, 410],
+      "size": [220, 90]
+    }
+  ],
+  "connections": [
+    {
+      "id": "desktopToCapture",
+      "from": "windowsDesktop",
+      "to": "activityCapture",
+      "label": "窗口与系统事件",
+      "variant": "emphasis"
+    },
+    {
+      "id": "captureToIdentity",
+      "from": "activityCapture",
+      "to": "identityResolver",
+      "label": "原始进程信息"
+    },
+    {
+      "id": "identityToSession",
+      "from": "identityResolver",
+      "to": "sessionTracker",
+      "label": "逻辑 AppIdentity"
+    },
+    {
+      "id": "hostToTracker",
+      "from": "lifecycleHost",
+      "to": "sessionTracker",
+      "label": "启动 / 停止",
+      "variant": "emphasis"
+    },
+    {
+      "id": "settingsToHost",
+      "from": "settingsAndLogs",
+      "to": "lifecycleHost",
+      "label": "配置与诊断"
+    },
+    {
+      "id": "trackerToBus",
+      "from": "sessionTracker",
+      "to": "changeBus",
+      "label": "发布 ActivityChange",
+      "variant": "emphasis"
+    },
+    {
+      "id": "busToDatabase",
+      "from": "changeBus",
+      "to": "databaseSink",
+      "label": "完整有序队列",
+      "variant": "emphasis"
+    },
+    {
+      "id": "databaseToSqlite",
+      "from": "databaseSink",
+      "to": "sqliteStore",
+      "label": "事务写入 / 重试",
+      "variant": "emphasis"
+    },
+    {
+      "id": "busToUi",
+      "from": "changeBus",
+      "to": "userInterface",
+      "label": "最新值刷新",
+      "variant": "dashed"
+    },
+    {
+      "id": "sqliteToUi",
+      "from": "sqliteStore",
+      "to": "userInterface",
+      "label": "历史记录与统计查询"
+    },
+    {
+      "id": "busToPresence",
+      "from": "changeBus",
+      "to": "presenceBridge",
+      "label": "最新活动状态",
+      "variant": "dashed"
+    },
+    {
+      "id": "hostToUi",
+      "from": "lifecycleHost",
+      "to": "userInterface",
+      "label": "显示、隐藏与唤醒"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "后台守护形态",
+      "items": [
+        "追踪生命周期由 Generic Host 管理，与窗口显示状态解耦。",
+        "重复启动通过 Mutex 与命名管道唤醒现有窗口。"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "可靠数据链路",
+      "items": [
+        "SessionTracker 发布不可变活动快照，数据库订阅完整有序消费。",
+        "关闭快照具有终局性，退出前排空事件并执行 WAL checkpoint。"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "展示与扩展",
+      "items": [
+        "StatisticsService 按逻辑 AppId 聚合，同时兼容没有 AppId 的历史记录。",
+        "UI 与 Presence 使用最新值通道，慢消费者不会阻塞核心追踪。"
+      ]
+    }
+  ]
+}

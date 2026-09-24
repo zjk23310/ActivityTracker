@@ -19,6 +19,16 @@ public sealed class ActivitySession
     public DateTime EndTime { get; set; }
     public int DurationSeconds { get; set; }
 
+    // v2 可靠性字段。UTC 毫秒用于比较和查询，本地 ISO 时间继续用于显示及兼容旧数据。
+    public string SessionKey { get; set; } = "";
+    public long StartUtcMs { get; set; }
+    public long EndUtcMs { get; set; }
+    public string LocalDate { get; set; } = "";
+    public bool IsClosed { get; set; } = true;
+    public string CloseReason { get; set; } = "";
+    public bool IsRecovered { get; set; }
+    public string Source { get; set; } = "live";
+
     // 是否为用户空闲片段。
     public bool IsIdle { get; set; }
 }

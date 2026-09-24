@@ -9,54 +9,12 @@ public sealed class DailyRepository
     // 日记日期统一用这个格式存储，便于直接比较
     private const string DateFormat = "yyyy-MM-dd";
 
-    private readonly string _connectionString;
+    private readonly SqliteConnectionFactory _connectionFactory;
 
-    public DailyRepository(string databasePath)
+    public DailyRepository(
+        SqliteConnectionFactory connectionFactory)
     {
-        _connectionString = $"Data Source={databasePath}";
-        Initialize();
-    }
-
-    // 初始化数据库，如果不存在则创建对应数据表
-    private void Initialize()
-    {
-        using var connection =
-            new SqliteConnection(_connectionString);
-        connection.Open();
-
-        var command = connection.CreateCommand();
-        command.CommandText =
-            SqlConstants.CreateDailyTable;
-        command.ExecuteNonQuery();
-
-        // 兼容早期版本建的表：补齐后加的列
-        SqliteSchemaHelper.EnsureColumn(
-            connection, "Daily", "Date",
-            "TEXT NOT NULL DEFAULT ''");
-
-        SqliteSchemaHelper.EnsureColumn(
-            connection, "Daily", "UpdatedAt",
-            "TEXT NOT NULL DEFAULT ''");
-
-        SqliteSchemaHelper.EnsureColumn(
-            connection, "Daily", "Title",
-            "TEXT NOT NULL DEFAULT ''");
-
-        SqliteSchemaHelper.EnsureColumn(
-            connection, "Daily", "Mood", "INTEGER");
-
-        SqliteSchemaHelper.EnsureColumn(
-            connection, "Daily", "Tags",
-            "TEXT NOT NULL DEFAULT ''");
-
-        // 旧数据回填：这两条改完就查不到符合条件的行，不会再执行
-        command.CommandText =
-            SqlConstants.MigrateDailyBackfillDate;
-        command.ExecuteNonQuery();
-
-        command.CommandText =
-            SqlConstants.MigrateDailyBackfillUpdatedAt;
-        command.ExecuteNonQuery();
+        _connectionFactory = connectionFactory;
     }
 
     // 插入一篇日记
@@ -64,35 +22,30 @@ public sealed class DailyRepository
     {
         var now = DateTime.Now.ToString("O");
 
-        using var connection =
-            new SqliteConnection(_connectionString);
-        connection.Open();
-
-        var command = connection.CreateCommand();
-        command.CommandText = SqlConstants.InsertDaily;
-        command.Parameters.AddWithValue(
-            "$date", entry.Date.Date.ToString(DateFormat));
-        command.Parameters.AddWithValue(
-            "$title", entry.Title);
-        command.Parameters.AddWithValue(
-            "$content", entry.Content);
-        command.Parameters.AddWithValue(
-            "$mood", (object?)entry.Mood ?? DBNull.Value);
-        command.Parameters.AddWithValue(
-            "$tags", entry.Tags);
-        command.Parameters.AddWithValue(
-            "$createdAt", now);
-        command.Parameters.AddWithValue(
-            "$updatedAt", now);
-        command.ExecuteNonQuery();
+        _connectionFactory.ExecuteWrite(
+            "新增日记",
+            connection =>
+            {
+                using var command = connection.CreateCommand();
+                command.CommandText = SqlConstants.InsertDaily;
+                command.Parameters.AddWithValue(
+                    "$date", entry.Date.Date.ToString(DateFormat));
+                command.Parameters.AddWithValue("$title", entry.Title);
+                command.Parameters.AddWithValue("$content", entry.Content);
+                command.Parameters.AddWithValue(
+                    "$mood", (object?)entry.Mood ?? DBNull.Value);
+                command.Parameters.AddWithValue("$tags", entry.Tags);
+                command.Parameters.AddWithValue("$createdAt", now);
+                command.Parameters.AddWithValue("$updatedAt", now);
+                return command.ExecuteNonQuery();
+            });
     }
 
     // 获取指定日期的日记（一天最多一篇）
     public DailyEntry? GetByDate(DateTime date)
     {
         using var connection =
-            new SqliteConnection(_connectionString);
-        connection.Open();
+            _connectionFactory.OpenConnection();
 
         var command = connection.CreateCommand();
         command.CommandText =
@@ -111,8 +64,7 @@ public sealed class DailyRepository
     public DailyEntry? GetById(long id)
     {
         using var connection =
-            new SqliteConnection(_connectionString);
-        connection.Open();
+            _connectionFactory.OpenConnection();
 
         var command = connection.CreateCommand();
         command.CommandText =
@@ -129,39 +81,38 @@ public sealed class DailyRepository
     // 更新日记内容
     public bool Update(DailyEntry entry)
     {
-        using var connection =
-            new SqliteConnection(_connectionString);
-        connection.Open();
-
-        var command = connection.CreateCommand();
-        command.CommandText = SqlConstants.UpdateDaily;
-        command.Parameters.AddWithValue(
-            "$title", entry.Title);
-        command.Parameters.AddWithValue(
-            "$content", entry.Content);
-        command.Parameters.AddWithValue(
-            "$mood", (object?)entry.Mood ?? DBNull.Value);
-        command.Parameters.AddWithValue(
-            "$tags", entry.Tags);
-        command.Parameters.AddWithValue(
-            "$updatedAt", DateTime.Now.ToString("O"));
-        command.Parameters.AddWithValue("$id", entry.Id);
-
-        return command.ExecuteNonQuery() > 0;
+        var result = _connectionFactory.ExecuteWrite(
+            "更新日记",
+            connection =>
+            {
+                using var command = connection.CreateCommand();
+                command.CommandText = SqlConstants.UpdateDaily;
+                command.Parameters.AddWithValue("$title", entry.Title);
+                command.Parameters.AddWithValue("$content", entry.Content);
+                command.Parameters.AddWithValue(
+                    "$mood", (object?)entry.Mood ?? DBNull.Value);
+                command.Parameters.AddWithValue("$tags", entry.Tags);
+                command.Parameters.AddWithValue(
+                    "$updatedAt", DateTime.Now.ToString("O"));
+                command.Parameters.AddWithValue("$id", entry.Id);
+                return command.ExecuteNonQuery() > 0;
+            });
+        return result.Success && result.Value;
     }
 
     // 删除日记
     public bool Delete(long id)
     {
-        using var connection =
-            new SqliteConnection(_connectionString);
-        connection.Open();
-
-        var command = connection.CreateCommand();
-        command.CommandText = SqlConstants.DeleteDaily;
-        command.Parameters.AddWithValue("$id", id);
-
-        return command.ExecuteNonQuery() > 0;
+        var result = _connectionFactory.ExecuteWrite(
+            "删除日记",
+            connection =>
+            {
+                using var command = connection.CreateCommand();
+                command.CommandText = SqlConstants.DeleteDaily;
+                command.Parameters.AddWithValue("$id", id);
+                return command.ExecuteNonQuery() > 0;
+            });
+        return result.Success && result.Value;
     }
 
     // 从 reader 读取一条日记

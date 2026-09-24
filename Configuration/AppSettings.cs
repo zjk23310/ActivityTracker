@@ -6,7 +6,7 @@ namespace ActivityTracker.Configuration;
 
 public sealed class AppSettings
 {
-    public const int CurrentSchemaVersion = 1;
+    public const int CurrentSchemaVersion = 2;
 
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
     public TrackingSettings Tracking { get; set; } = new();
@@ -20,6 +20,18 @@ public sealed class AppSettings
 
         Tracking.IdleThresholdMinutes =
             Math.Clamp(Tracking.IdleThresholdMinutes, 1, 240);
+
+        Tracking.CheckpointSeconds =
+            Math.Clamp(Tracking.CheckpointSeconds, 5, 300);
+
+        Tracking.GapThresholdSeconds =
+            Math.Clamp(Tracking.GapThresholdSeconds, 10, 300);
+
+        Tracking.MaxSessionMinutes =
+            Math.Clamp(Tracking.MaxSessionMinutes, 30, 1440);
+
+        Tracking.UiRefreshIntervalMs =
+            Math.Clamp(Tracking.UiRefreshIntervalMs, 100, 5000);
 
         Logging.RetentionDays =
             Math.Clamp(Logging.RetentionDays, 1, 365);
@@ -45,6 +57,12 @@ public sealed class AppSettings
 public sealed class TrackingSettings
 {
     public int IdleThresholdMinutes { get; set; } = 5;
+    public int CheckpointSeconds { get; set; } = 30;
+    public int GapThresholdSeconds { get; set; } = 30;
+    public int MaxSessionMinutes { get; set; } = 360;
+    public int UiRefreshIntervalMs { get; set; } = 500;
+    public bool SplitAtMidnight { get; set; } = true;
+    public bool VerifyIntegrityOnStartup { get; set; }
 }
 
 public sealed class LoggingSettings

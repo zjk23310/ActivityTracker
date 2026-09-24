@@ -49,6 +49,15 @@ public sealed class ForegroundWindowTracker : IDisposable
             RaiseWindowInfo(hwnd);
     }
 
+    // 睡眠恢复、解锁或心跳断层后主动重读前台窗口，
+    // 不依赖 Windows 一定会再次发送前台切换事件。
+    public void Refresh()
+    {
+        var current = GetForegroundWindow();
+        if (current != IntPtr.Zero)
+            RaiseWindowInfo(current);
+    }
+
     private void RaiseWindowInfo(IntPtr hwnd)//从一个窗口句柄，解析出这个窗口属于哪个应用。
     {
         try

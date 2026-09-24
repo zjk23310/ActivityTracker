@@ -1,0 +1,18 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="DesignTokens.Dark.xaml"/>
+        <ResourceDictionary Source="Typography.xaml"/>
+        <ResourceDictionary Source="Metrics.xaml"/>
+        <ResourceDictionary Source="Controls.Button.xaml"/>
+        <ResourceDictionary Source="Controls.TextBox.xaml"/>
+        <ResourceDictionary Source="Controls.ComboBox.xaml"/>
+        <ResourceDictionary Source="Controls.CheckBox.xaml"/>
+        <ResourceDictionary Source="Controls.ScrollBar.xaml"/>
+        <ResourceDictionary Source="Controls.TabControl.xaml"/>
+        <ResourceDictionary Source="Controls.DataGrid.xaml"/>
+        <ResourceDictionary Source="Controls.Card.xaml"/>
+        <ResourceDictionary Source="Controls.List.xaml"/>
+        <ResourceDictionary Source="Controls.Progress.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

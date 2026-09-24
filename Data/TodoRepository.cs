@@ -10,82 +10,40 @@ public sealed class TodoRepository
     // 日期 / 时刻统一用这两个格式存储
     private const string DateFormat = "yyyy-MM-dd";
 
-    private readonly string _connectionString;
+    private readonly SqliteConnectionFactory _connectionFactory;
 
-    public TodoRepository(string databasePath)
+    public TodoRepository(
+        SqliteConnectionFactory connectionFactory)
     {
-        _connectionString = $"Data Source={databasePath}";
-        Initialize();
-    }
-
-    // 初始化数据库，如果不存在则创建对应数据表
-    private void Initialize()
-    {
-        using var connection =
-            new SqliteConnection(_connectionString);
-        connection.Open();
-
-        var command = connection.CreateCommand();
-        command.CommandText =
-            SqlConstants.CreateTodoItemTable;
-        command.ExecuteNonQuery();
-
-        // 兼容早期版本建的表：补齐后加的列
-        SqliteSchemaHelper.EnsureColumn(
-            connection, "TodoItem", "Note",
-            "TEXT NOT NULL DEFAULT ''");
-
-        SqliteSchemaHelper.EnsureColumn(
-            connection, "TodoItem", "Priority",
-            "INTEGER NOT NULL DEFAULT 0");
-
-        SqliteSchemaHelper.EnsureColumn(
-            connection, "TodoItem", "Category",
-            "TEXT NOT NULL DEFAULT ''");
-
-        SqliteSchemaHelper.EnsureColumn(
-            connection, "TodoItem", "DueTime", "TEXT");
-
-        SqliteSchemaHelper.EnsureColumn(
-            connection, "TodoItem", "SortOrder",
-            "INTEGER NOT NULL DEFAULT 0");
-
-        SqliteSchemaHelper.EnsureColumn(
-            connection, "TodoItem", "RemindAt", "TEXT");
+        _connectionFactory = connectionFactory;
     }
 
     // 添加待办事项，SortOrder 由 SQL 内部取最大值 +1
     public void Insert(TodoItem item)
     {
-        using var connection =
-            new SqliteConnection(_connectionString);
-        connection.Open();
-
-        var command = connection.CreateCommand();
-        command.CommandText =
-            SqlConstants.InsertTodoItem;
-        command.Parameters.AddWithValue(
-            "$title", item.Title);
-        command.Parameters.AddWithValue(
-            "$note", item.Note);
-        command.Parameters.AddWithValue(
-            "$priority", item.Priority);
-        command.Parameters.AddWithValue(
-            "$category", item.Category);
-        command.Parameters.AddWithValue(
-            "$dueDate",
-            item.DueDate.Date.ToString(DateFormat));
-        command.Parameters.AddWithValue(
-            "$dueTime",
-            (object?)item.DueTime ?? DBNull.Value);
-        command.Parameters.AddWithValue(
-            "$remindAt",
-            item.RemindAt.HasValue
-                ? item.RemindAt.Value.ToString("O")
-                : DBNull.Value);
-        command.Parameters.AddWithValue(
-            "$createdAt", DateTime.Now.ToString("O"));
-        command.ExecuteNonQuery();
+        _connectionFactory.ExecuteWrite(
+            "新增待办事项",
+            connection =>
+            {
+                using var command = connection.CreateCommand();
+                command.CommandText = SqlConstants.InsertTodoItem;
+                command.Parameters.AddWithValue("$title", item.Title);
+                command.Parameters.AddWithValue("$note", item.Note);
+                command.Parameters.AddWithValue("$priority", item.Priority);
+                command.Parameters.AddWithValue("$category", item.Category);
+                command.Parameters.AddWithValue(
+                    "$dueDate", item.DueDate.Date.ToString(DateFormat));
+                command.Parameters.AddWithValue(
+                    "$dueTime", (object?)item.DueTime ?? DBNull.Value);
+                command.Parameters.AddWithValue(
+                    "$remindAt",
+                    item.RemindAt.HasValue
+                        ? item.RemindAt.Value.ToString("O")
+                        : DBNull.Value);
+                command.Parameters.AddWithValue(
+                    "$createdAt", DateTime.Now.ToString("O"));
+                return command.ExecuteNonQuery();
+            });
     }
 
     // 获取指定日期的待办事项
@@ -94,8 +52,7 @@ public sealed class TodoRepository
         var result = new List<TodoItem>();
 
         using var connection =
-            new SqliteConnection(_connectionString);
-        connection.Open();
+            _connectionFactory.OpenConnection();
 
         var command = connection.CreateCommand();
         command.CommandText =
@@ -118,8 +75,7 @@ public sealed class TodoRepository
         var result = new List<TodoItem>();
 
         using var connection =
-            new SqliteConnection(_connectionString);
-        connection.Open();
+            _connectionFactory.OpenConnection();
 
         var command = connection.CreateCommand();
         command.CommandText =
@@ -137,48 +93,48 @@ public sealed class TodoRepository
     // 标记为已完成
     public bool Complete(long id)
     {
-        using var connection =
-            new SqliteConnection(_connectionString);
-        connection.Open();
-
-        var command = connection.CreateCommand();
-        command.CommandText =
-            SqlConstants.CompleteTodoItem;
-        command.Parameters.AddWithValue("$id", id);
-        command.Parameters.AddWithValue(
-            "$completedAt", DateTime.Now.ToString("O"));
-
-        return command.ExecuteNonQuery() > 0;
+        var result = _connectionFactory.ExecuteWrite(
+            "完成待办事项",
+            connection =>
+            {
+                using var command = connection.CreateCommand();
+                command.CommandText = SqlConstants.CompleteTodoItem;
+                command.Parameters.AddWithValue("$id", id);
+                command.Parameters.AddWithValue(
+                    "$completedAt", DateTime.Now.ToString("O"));
+                return command.ExecuteNonQuery() > 0;
+            });
+        return result.Success && result.Value;
     }
 
     // 取消完成标记
     public bool Uncomplete(long id)
     {
-        using var connection =
-            new SqliteConnection(_connectionString);
-        connection.Open();
-
-        var command = connection.CreateCommand();
-        command.CommandText =
-            SqlConstants.UncompleteTodoItem;
-        command.Parameters.AddWithValue("$id", id);
-
-        return command.ExecuteNonQuery() > 0;
+        var result = _connectionFactory.ExecuteWrite(
+            "取消完成待办事项",
+            connection =>
+            {
+                using var command = connection.CreateCommand();
+                command.CommandText = SqlConstants.UncompleteTodoItem;
+                command.Parameters.AddWithValue("$id", id);
+                return command.ExecuteNonQuery() > 0;
+            });
+        return result.Success && result.Value;
     }
 
     // 删除待办事项
     public bool Delete(long id)
     {
-        using var connection =
-            new SqliteConnection(_connectionString);
-        connection.Open();
-
-        var command = connection.CreateCommand();
-        command.CommandText =
-            SqlConstants.DeleteTodoItem;
-        command.Parameters.AddWithValue("$id", id);
-
-        return command.ExecuteNonQuery() > 0;
+        var result = _connectionFactory.ExecuteWrite(
+            "删除待办事项",
+            connection =>
+            {
+                using var command = connection.CreateCommand();
+                command.CommandText = SqlConstants.DeleteTodoItem;
+                command.Parameters.AddWithValue("$id", id);
+                return command.ExecuteNonQuery() > 0;
+            });
+        return result.Success && result.Value;
     }
 
     // 从 reader 中读取一条待办事项
